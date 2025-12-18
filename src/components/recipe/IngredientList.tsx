@@ -35,8 +35,8 @@ export function IngredientList({ ingredients, recipeId, recipeName }: Ingredient
   };
 
   const addToShoppingList = (ingredient: Ingredient) => {
-    const formattedText = formatIngredient(ingredient, scale, unitSystem);
-    addItem(formattedText, recipeId, recipeName);
+    const shoppingText = formatForShoppingList(ingredient, scale, unitSystem);
+    addItem(shoppingText, recipeId, recipeName);
     setAddedItems(prev => new Set(prev).add(ingredient.id));
 
     // Clear the "added" indicator after 2 seconds
@@ -52,8 +52,8 @@ export function IngredientList({ ingredients, recipeId, recipeName }: Ingredient
   const addAllToShoppingList = () => {
     ingredients.forEach((ing) => {
       if (!checkedItems.has(ing.id)) {
-        const formattedText = formatIngredient(ing, scale, unitSystem);
-        addItem(formattedText, recipeId, recipeName);
+        const shoppingText = formatForShoppingList(ing, scale, unitSystem);
+        addItem(shoppingText, recipeId, recipeName);
       }
     });
     // Mark all as added briefly
@@ -193,4 +193,109 @@ function formatDisplayAmount(
   }
 
   return formatted;
+}
+
+// Units that represent small quantities (spices, seasonings) - just show item name
+const SMALL_QUANTITY_UNITS = new Set([
+  'tsp', 'teaspoon', 'teaspoons',
+  'tbsp', 'tablespoon', 'tablespoons',
+  'pinch', 'dash', 'sprinkle',
+  'ml', // small metric volumes
+]);
+
+// Units where quantity matters for shopping (produce, proteins, large volumes)
+const COUNTABLE_UNITS = new Set([
+  'lb', 'lbs', 'pound', 'pounds',
+  'oz', 'ounce', 'ounces',
+  'cup', 'cups',
+  'can', 'cans',
+  'package', 'packages', 'pkg',
+  'bunch', 'bunches',
+  'head', 'heads',
+  'clove', 'cloves',
+  'slice', 'slices',
+  'piece', 'pieces',
+  'g', 'kg', 'L', // larger metric
+]);
+
+/**
+ * Format ingredient for shopping list - focuses on what you actually buy
+ *
+ * Examples:
+ * - "2 tsp cumin" → "cumin"
+ * - "2 carrots" → "carrots (2)"
+ * - "1 lb chicken breast" → "chicken breast (1 lb)"
+ * - "1 cup olive oil" → "olive oil (1 cup)"
+ * - "salt to taste" → "salt"
+ */
+function formatForShoppingList(
+  ingredient: Ingredient,
+  scale: number = 1,
+  unitSystem: UnitSystem = 'us'
+): string {
+  // If no parsed data, return original but try to clean it
+  if (!ingredient.item) {
+    return cleanItemName(ingredient.originalText);
+  }
+
+  const item = cleanItemName(ingredient.item);
+  const unit = ingredient.unitNormalized || ingredient.unit || '';
+  const normalizedUnit = unit.toLowerCase().trim();
+
+  // No amount - just the item
+  if (!ingredient.amount) {
+    return item;
+  }
+
+  // Scale the amount
+  let scaledAmount = scaleAmount(ingredient.amount, scale);
+  let displayUnit = unit;
+
+  // Convert units if metric
+  if (unitSystem === 'metric' && unit) {
+    const converted = convertUnit(scaledAmount, unit, 'metric');
+    scaledAmount = converted.amount;
+    displayUnit = converted.unit;
+  }
+
+  // Small quantities (spices, seasonings) - just the item name
+  if (SMALL_QUANTITY_UNITS.has(normalizedUnit)) {
+    // Exception: if it's a large amount (like 1/4 cup of a spice), show it
+    if (normalizedUnit === 'tbsp' && scaledAmount >= 3) {
+      return `${item} (${formatAmount(scaledAmount, unitSystem)} ${displayUnit})`;
+    }
+    if (normalizedUnit === 'ml' && scaledAmount >= 50) {
+      return `${item} (${formatAmount(scaledAmount, unitSystem)} ${displayUnit})`;
+    }
+    return item;
+  }
+
+  // No unit but has amount (like "2 carrots", "4 garlic cloves")
+  if (!unit && scaledAmount) {
+    // Whole numbers look cleaner without decimals
+    const displayAmount = scaledAmount % 1 === 0
+      ? scaledAmount.toString()
+      : formatAmount(scaledAmount, unitSystem);
+    return `${item} (${displayAmount})`;
+  }
+
+  // Countable/significant units - show with quantity
+  if (COUNTABLE_UNITS.has(normalizedUnit) || scaledAmount >= 0.5) {
+    const formattedAmount = formatAmount(scaledAmount, unitSystem);
+    return `${item} (${formattedAmount} ${displayUnit})`.trim();
+  }
+
+  // Default: just the item
+  return item;
+}
+
+/**
+ * Clean up item name for shopping list display
+ */
+function cleanItemName(text: string): string {
+  return text
+    // Remove leading/trailing whitespace
+    .trim()
+    // Capitalize first letter
+    .replace(/^./, (c) => c.toUpperCase());
 }
