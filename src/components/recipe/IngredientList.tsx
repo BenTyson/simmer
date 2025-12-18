@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, ShoppingCart } from 'lucide-react';
+import { Plus, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
+import { useRecipeView } from '@/store/recipe-view';
+import { useShoppingList } from '@/store/shopping-list';
+import { convertUnit, formatAmount, scaleAmount } from '@/lib/utils/units';
 import type { Ingredient } from '@/types/recipe';
 
 interface IngredientListProps {
@@ -14,6 +17,12 @@ interface IngredientListProps {
 
 export function IngredientList({ ingredients, recipeId, recipeName }: IngredientListProps) {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
+
+  const { servings, defaultServings, unitSystem } = useRecipeView();
+  const { addItem } = useShoppingList();
+
+  const scale = servings / defaultServings;
 
   const toggleItem = (id: string) => {
     const newChecked = new Set(checkedItems);
@@ -26,18 +35,31 @@ export function IngredientList({ ingredients, recipeId, recipeName }: Ingredient
   };
 
   const addToShoppingList = (ingredient: Ingredient) => {
-    // This will integrate with the shopping list store
-    console.log('Add to shopping list:', ingredient.originalText);
-    // TODO: Integrate with Zustand store
+    const formattedText = formatIngredient(ingredient, scale, unitSystem);
+    addItem(formattedText, recipeId, recipeName);
+    setAddedItems(prev => new Set(prev).add(ingredient.id));
+
+    // Clear the "added" indicator after 2 seconds
+    setTimeout(() => {
+      setAddedItems(prev => {
+        const next = new Set(prev);
+        next.delete(ingredient.id);
+        return next;
+      });
+    }, 2000);
   };
 
   const addAllToShoppingList = () => {
-    // Add all unchecked items to shopping list
     ingredients.forEach((ing) => {
       if (!checkedItems.has(ing.id)) {
-        addToShoppingList(ing);
+        const formattedText = formatIngredient(ing, scale, unitSystem);
+        addItem(formattedText, recipeId, recipeName);
       }
     });
+    // Mark all as added briefly
+    const allIds = new Set(ingredients.map(i => i.id));
+    setAddedItems(allIds);
+    setTimeout(() => setAddedItems(new Set()), 2000);
   };
 
   if (ingredients.length === 0) {
@@ -83,17 +105,26 @@ export function IngredientList({ ingredients, recipeId, recipeName }: Ingredient
                   checkedItems.has(ingredient.id) && 'text-neutral-400 line-through'
                 )}
               >
-                {formatIngredient(ingredient)}
+                {formatIngredient(ingredient, scale, unitSystem)}
               </span>
             </label>
 
             {/* Add to list button */}
             <button
               onClick={() => addToShoppingList(ingredient)}
-              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-all"
-              title="Add to shopping list"
+              className={cn(
+                'p-1.5 rounded-lg transition-all',
+                addedItems.has(ingredient.id)
+                  ? 'opacity-100 text-green-600 bg-green-50'
+                  : 'opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-primary-600 hover:bg-primary-50'
+              )}
+              title={addedItems.has(ingredient.id) ? 'Added!' : 'Add to shopping list'}
             >
-              <Plus className="w-4 h-4" />
+              {addedItems.has(ingredient.id) ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
             </button>
           </li>
         ))}
@@ -110,71 +141,56 @@ export function IngredientList({ ingredients, recipeId, recipeName }: Ingredient
   );
 }
 
-// Format ingredient for display
-function formatIngredient(ingredient: Ingredient): string {
-  // If we have parsed data, format nicely
+type UnitSystem = 'us' | 'metric';
+
+// Format ingredient for display with scaling and unit conversion
+function formatIngredient(
+  ingredient: Ingredient,
+  scale: number = 1,
+  unitSystem: UnitSystem = 'us'
+): string {
+  // If we have parsed data, format with scaling and conversion
   if (ingredient.amount && ingredient.item) {
-    const amount = formatAmount(ingredient.amount, ingredient.amountMax);
-    const unit = ingredient.unitNormalized || ingredient.unit || '';
+    // Scale the amount
+    let scaledAmount = scaleAmount(ingredient.amount, scale);
+    let scaledMax = ingredient.amountMax ? scaleAmount(ingredient.amountMax, scale) : null;
+    let unit = ingredient.unitNormalized || ingredient.unit || '';
+
+    // Convert units if metric is selected
+    if (unitSystem === 'metric' && unit) {
+      const converted = convertUnit(scaledAmount, unit, 'metric');
+      scaledAmount = converted.amount;
+      unit = converted.unit;
+
+      if (scaledMax) {
+        const convertedMax = convertUnit(scaledMax, ingredient.unitNormalized || ingredient.unit || '', 'metric');
+        scaledMax = convertedMax.amount;
+      }
+    }
+
+    // Format the amount
+    const formattedAmount = formatDisplayAmount(scaledAmount, scaledMax, unitSystem);
     const item = ingredient.item;
     const prep = ingredient.preparation ? `, ${ingredient.preparation}` : '';
 
-    return `${amount} ${unit} ${item}${prep}`.trim().replace(/\s+/g, ' ');
+    return `${formattedAmount} ${unit} ${item}${prep}`.trim().replace(/\s+/g, ' ');
   }
 
-  // Fall back to original text
+  // Fall back to original text (can't scale without parsed data)
   return ingredient.originalText;
 }
 
-// Format amount with fractions
-function formatAmount(amount: number, amountMax?: number | null): string {
-  const formatted = formatNumber(amount);
+// Format amount with optional max value
+function formatDisplayAmount(
+  amount: number,
+  amountMax: number | null,
+  unitSystem: UnitSystem
+): string {
+  const formatted = formatAmount(amount, unitSystem);
 
-  if (amountMax && amountMax !== amount) {
-    return `${formatted}-${formatNumber(amountMax)}`;
+  if (amountMax && Math.abs(amountMax - amount) > 0.01) {
+    return `${formatted}-${formatAmount(amountMax, unitSystem)}`;
   }
 
   return formatted;
-}
-
-// Convert decimal to fraction for display
-function formatNumber(num: number): string {
-  // Common fractions
-  const fractions: Record<number, string> = {
-    0.125: '⅛',
-    0.25: '¼',
-    0.333: '⅓',
-    0.375: '⅜',
-    0.5: '½',
-    0.625: '⅝',
-    0.666: '⅔',
-    0.75: '¾',
-    0.875: '⅞',
-  };
-
-  const whole = Math.floor(num);
-  const decimal = num - whole;
-
-  // Find closest fraction
-  let closestFrac = '';
-  let minDiff = 1;
-
-  for (const [key, value] of Object.entries(fractions)) {
-    const diff = Math.abs(decimal - parseFloat(key));
-    if (diff < minDiff && diff < 0.05) {
-      minDiff = diff;
-      closestFrac = value;
-    }
-  }
-
-  if (closestFrac) {
-    return whole > 0 ? `${whole}${closestFrac}` : closestFrac;
-  }
-
-  // No close fraction, return decimal
-  if (decimal === 0) {
-    return whole.toString();
-  }
-
-  return num.toFixed(num < 1 ? 2 : 1).replace(/\.?0+$/, '');
 }

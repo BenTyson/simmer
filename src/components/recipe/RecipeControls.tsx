@@ -1,27 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Minus, Plus, Printer, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
+import { useRecipeView } from '@/store/recipe-view';
 
 interface RecipeControlsProps {
   defaultServings: number;
 }
 
 export function RecipeControls({ defaultServings }: RecipeControlsProps) {
-  const [servings, setServings] = useState(defaultServings);
-  const [useMetric, setUseMetric] = useState(false);
+  const {
+    servings,
+    unitSystem,
+    setDefaultServings,
+    incrementServings,
+    decrementServings,
+    setUnitSystem,
+  } = useRecipeView();
+
+  // Initialize default servings when component mounts
+  useEffect(() => {
+    setDefaultServings(defaultServings);
+  }, [defaultServings, setDefaultServings]);
 
   const scale = servings / defaultServings;
-
-  const decreaseServings = () => {
-    if (servings > 1) setServings(servings - 1);
-  };
-
-  const increaseServings = () => {
-    setServings(servings + 1);
-  };
 
   const handlePrint = () => {
     window.print();
@@ -51,7 +55,7 @@ export function RecipeControls({ defaultServings }: RecipeControlsProps) {
         <span className="text-sm font-medium text-neutral-600">Servings:</span>
         <div className="flex items-center gap-1">
           <button
-            onClick={decreaseServings}
+            onClick={decrementServings}
             disabled={servings <= 1}
             className={cn(
               'w-8 h-8 rounded-full flex items-center justify-center transition-colors',
@@ -65,7 +69,7 @@ export function RecipeControls({ defaultServings }: RecipeControlsProps) {
           </button>
           <span className="w-10 text-center font-bold text-lg text-neutral-900">{servings}</span>
           <button
-            onClick={increaseServings}
+            onClick={incrementServings}
             className={cn(
               'w-8 h-8 rounded-full flex items-center justify-center transition-colors',
               'bg-white border border-neutral-200 text-neutral-600',
@@ -77,7 +81,7 @@ export function RecipeControls({ defaultServings }: RecipeControlsProps) {
           </button>
         </div>
         {scale !== 1 && (
-          <span className="text-xs text-primary-600 font-medium">({scale}x)</span>
+          <span className="text-xs text-primary-600 font-medium">({scale.toFixed(1)}x)</span>
         )}
       </div>
 
@@ -86,19 +90,19 @@ export function RecipeControls({ defaultServings }: RecipeControlsProps) {
         <span className="text-sm font-medium text-neutral-600">Units:</span>
         <div className="flex rounded-full bg-white border border-neutral-200 p-0.5">
           <button
-            onClick={() => setUseMetric(false)}
+            onClick={() => setUnitSystem('us')}
             className={cn(
               'px-3 py-1 rounded-full text-sm font-medium transition-colors',
-              !useMetric ? 'bg-primary-500 text-white' : 'text-neutral-600 hover:text-neutral-900'
+              unitSystem === 'us' ? 'bg-primary-500 text-white' : 'text-neutral-600 hover:text-neutral-900'
             )}
           >
             US
           </button>
           <button
-            onClick={() => setUseMetric(true)}
+            onClick={() => setUnitSystem('metric')}
             className={cn(
               'px-3 py-1 rounded-full text-sm font-medium transition-colors',
-              useMetric ? 'bg-primary-500 text-white' : 'text-neutral-600 hover:text-neutral-900'
+              unitSystem === 'metric' ? 'bg-primary-500 text-white' : 'text-neutral-600 hover:text-neutral-900'
             )}
           >
             Metric
