@@ -1,6 +1,6 @@
 # Simmer - Technical Architecture
 
-> **Last Updated**: 2025-12-15
+> **Last Updated**: 2025-12-16
 > **Related**: [SESSION-START.md](./SESSION-START.md) | [SIMMER.md](./SIMMER.md)
 
 ---
@@ -121,7 +121,9 @@ simmer/
 ├── supabase/
 │   └── migrations/
 │       ├── 001_initial_schema.sql # Core tables
-│       └── 002_fts_search.sql     # FTS setup
+│       ├── 002_fts_search.sql     # FTS setup
+│       ├── 003_domain_functions.sql # Domain stats
+│       └── 004_fix_search_vector.sql # Parameter fix
 │
 ├── public/                        # Static assets
 │
@@ -294,17 +296,38 @@ search_recipes(
 
 ### Implemented
 
+| Route | Method | Purpose | Auth |
+|-------|--------|---------|------|
+| `/api/health` | GET | Health check for Railway | None |
+| `/api/scrape` | POST | Manual scrape single URL | Bearer CRON_SECRET |
+| `/api/cron/scrape` | POST | Process scrape queue (batch) | Bearer CRON_SECRET |
+| `/api/cron/discover` | POST | Discover URLs from sitemaps | Bearer CRON_SECRET |
+
+### Example Usage
+
+```bash
+# Health check
+curl http://localhost:3388/api/health
+
+# Scrape a single URL
+curl -X POST http://localhost:3388/api/scrape \
+  -H "Authorization: Bearer YOUR_CRON_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/recipe"}'
+
+# Process queue (called by Railway cron)
+curl -X POST http://localhost:3388/api/cron/scrape \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
+
+# Discover new URLs from sitemaps
+curl -X POST http://localhost:3388/api/cron/discover \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
+```
+
+### Future Routes
+
 | Route | Method | Purpose |
 |-------|--------|---------|
-| `/api/health` | GET | Health check for Railway |
-
-### To Be Implemented
-
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/scrape` | POST | Manual scrape single URL |
-| `/api/cron/scrape` | POST | Process scrape queue |
-| `/api/cron/discover` | POST | Discover URLs from sitemaps |
 | `/api/search` | GET | Search recipes (optional, can use server components) |
 
 ---

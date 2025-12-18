@@ -1,6 +1,28 @@
 import * as cheerio from 'cheerio';
 
 /**
+ * Decode HTML entities in text
+ * Handles &nbsp;, &amp;, &#39;, etc.
+ */
+function decodeHtmlEntities(text: string): string {
+  if (!text) return text;
+
+  // Use cheerio to decode HTML entities
+  const $ = cheerio.load(`<div>${text}</div>`);
+  return $('div').text().trim();
+}
+
+/**
+ * Clean text by decoding entities and normalizing whitespace
+ */
+export function cleanText(text: string | undefined | null): string | null {
+  if (!text) return null;
+  return decodeHtmlEntities(text)
+    .replace(/\s+/g, ' ')
+    .trim() || null;
+}
+
+/**
  * Schema.org Recipe type definition
  * Based on https://schema.org/Recipe
  */

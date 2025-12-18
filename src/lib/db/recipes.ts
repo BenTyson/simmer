@@ -272,7 +272,8 @@ export async function insertRecipe(
     .single();
 
   if (recipeError || !recipeData) {
-    console.error('Failed to insert recipe:', recipeError);
+    console.error('Failed to insert recipe:', recipeError?.message, recipeError?.details, recipeError?.hint);
+    console.error('Recipe data attempted:', JSON.stringify({ slug: recipe.slug, name: recipe.name, sourceUrl: recipe.sourceUrl }));
     return null;
   }
 

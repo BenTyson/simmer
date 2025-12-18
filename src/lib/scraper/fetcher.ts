@@ -57,6 +57,7 @@ export async function fetchWithRetry(
       return html;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`Fetch attempt ${attempt + 1} failed for ${url}:`, lastError.message, lastError.cause);
 
       // Don't retry on 4xx errors (except 429)
       if (

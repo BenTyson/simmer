@@ -11,6 +11,7 @@ import {
   normalizeInstructions,
   normalizeArray,
   parseNutritionValue,
+  cleanText,
 } from './schema-parser';
 import { parseIngredient } from './ingredient-parser';
 import { insertRecipe } from '@/lib/db/recipes';
@@ -79,8 +80,8 @@ export async function scrapeRecipe(url: string): Promise<ScrapeResult> {
     // Build recipe object
     const recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'> = {
       slug,
-      name: schemaRecipe.name,
-      description: schemaRecipe.description || null,
+      name: cleanText(schemaRecipe.name) || schemaRecipe.name,
+      description: cleanText(schemaRecipe.description),
       prepTime: parseDuration(schemaRecipe.prepTime),
       cookTime: parseDuration(schemaRecipe.cookTime),
       totalTime: parseDuration(schemaRecipe.totalTime),
@@ -98,10 +99,11 @@ export async function scrapeRecipe(url: string): Promise<ScrapeResult> {
     const ingredientTexts = schemaRecipe.recipeIngredient || [];
     const ingredients: Omit<Ingredient, 'id' | 'recipeId'>[] = ingredientTexts.map(
       (text, index) => {
-        const parsed = parseIngredient(text);
+        const cleanedText = cleanText(text) || text;
+        const parsed = parseIngredient(cleanedText);
         return {
           position: index + 1,
-          originalText: text,
+          originalText: cleanedText,
           amount: parsed.amount,
           amountMax: parsed.amountMax,
           unit: parsed.unit,
@@ -118,7 +120,7 @@ export async function scrapeRecipe(url: string): Promise<ScrapeResult> {
     const instructions: Omit<Instruction, 'id' | 'recipeId'>[] = instructionTexts.map(
       (text, index) => ({
         stepNumber: index + 1,
-        text,
+        text: cleanText(text) || text,
       })
     );
 

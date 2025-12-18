@@ -1,187 +1,136 @@
-# SIMMER - Session Start Document
+# SIMMER - Project Overview
 
-> **Last Updated**: 2025-12-15
-> **Current Phase**: MVP Complete - Ready for Supabase Setup
-> **Project Status**: ACTIVE
+> **Last Updated**: 2025-12-16
+> **Status**: Database Connected - Scraping Operational
 > **Local Dev**: `http://localhost:3388`
 > **Tagline**: "Let it simmer"
 
 ---
 
-## Quick Links (Internal Documentation)
+## Quick Links
 
 | Document | Purpose |
 |----------|---------|
-| [SESSION-START.md](./SESSION-START.md) | **START HERE** - AI agent onboarding, critical files, quick commands |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical architecture, data models, API design |
-| [SIMMER.md](./SIMMER.md) | This file - project vision, business context, session log |
+| [SESSION-START.md](./SESSION-START.md) | **START HERE** - AI agent onboarding |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical architecture |
 
 ---
 
-## 1. Project Status Summary
+## 1. What is Simmer?
 
-### What's Built (MVP Complete)
-- [x] Next.js 16 + TypeScript + Tailwind v4
-- [x] Bold & Playful design system (coral/teal/yellow palette)
-- [x] Homepage with hero search
-- [x] Search page with filters
-- [x] Recipe detail page with scaling controls
-- [x] Shopping list with Zustand + localStorage
-- [x] Schema.org scraping pipeline
-- [x] Ingredient parser (amounts, units, items)
-- [x] Supabase database schema + FTS search
-- [x] Railway deployment configuration
+A recipe aggregator that strips away stories, ads, and fluff from recipe sites. We present just the recipe with value-added features:
 
-### What's Next
-- [ ] **Set up Supabase project** and run migrations
-- [ ] **Configure environment variables** (.env.local)
-- [ ] **Create seed scripts** for initial recipe scraping
-- [ ] **Connect Railway** for production deployment
-- [ ] **Apply for affiliate programs** (Instacart, Amazon)
+- **Ingredient scaling** - Adjust servings dynamically
+- **Unit conversion** - Metric/imperial toggle
+- **Shopping lists** - Add ingredients, export to Instacart
+- **Clean reading** - No life stories, no pop-ups
+
+**Revenue**: Affiliate links (Instacart, Amazon) + minimal ads
+**Target**: $2-5K/month passive income
 
 ---
 
-## 2. Quick Context
+## 2. Tech Stack
 
-**What**: A clean recipe aggregator that strips away the stories, ads, and fluff from recipe sites, presenting just the recipe with value-added features like shopping lists, scaling, and unit conversion.
-
-**Revenue Model**: Affiliate links (Instacart, Amazon) + minimal display ads
-
-**Why This Will Work**: Recipe sites are universally hated for their bloated content. We solve a real pain point by leveraging legally-published schema.org structured data while adding genuine value.
-
-**Target Revenue**: $2-5K/month
-
-**Passivity Score**: 8/10 - Automated scraping, minimal support, evergreen content
-
----
-
-## 3. Tech Stack (Final)
-
-| Layer | Choice | Rationale |
-|-------|--------|-----------|
-| Framework | **Next.js 16** | SSR for SEO, App Router, React 19 |
-| Database | **Supabase (PostgreSQL)** | Recipe storage, full-text search |
-| Styling | **Tailwind CSS v4** | Bold & Playful design tokens |
-| Hosting | **Railway** | Easy deployment, cron jobs |
-| Search | **PostgreSQL FTS** | Built into Supabase |
-| Scraping | **Cheerio** | schema.org JSON-LD extraction |
-| State | **Zustand** | Shopping list with localStorage |
-| Analytics | **Plausible** | Privacy-focused (future) |
+| Layer | Choice |
+|-------|--------|
+| Framework | Next.js 16 + React 19 |
+| Database | Supabase (PostgreSQL) |
+| Styling | Tailwind CSS v4 |
+| Hosting | Railway |
+| Scraping | Cheerio (schema.org) |
+| State | Zustand + localStorage |
 
 ---
 
-## 4. Legal Compliance (CRITICAL)
+## 3. Legal Compliance
 
-### What We DO
-- Extract schema.org/Recipe structured data (publicly published)
-- Always credit and link to original source
+### We DO:
+- Extract schema.org/Recipe structured data
+- Credit and link to original source
 - Respect robots.txt and rate limits
-- Add value through scaling, conversion, shopping lists
+- Add genuine value (scaling, lists)
 
-### What We DON'T Do
+### We DON'T:
 - Scrape photos (copyrighted)
-- Copy story content (creative expression)
+- Copy story content
 - Ignore rate limits
 - Remove attribution
 
 ---
 
-## 5. Session Log
+## 4. Session Log
 
-### 2025-12-15 - MVP Build Complete
+### 2025-12-16 - Database Connected & Scraping Operational
 
 **Accomplished:**
-- Built complete Next.js 16 application from scratch
-- Created Bold & Playful design system (coral #FF6B35, teal #00D9C0, yellow #FFD23F)
-- Implemented all core pages: Homepage, Search, Recipe Detail, Shopping List, About
-- Built scraping pipeline: schema-parser.ts, ingredient-parser.ts, fetcher.ts
-- Created Supabase database schema with FTS search functions
-- Set up Zustand store for shopping list with localStorage persistence
-- Configured Railway deployment (railway.json, standalone output)
-- Set local dev port to 3388
+- Connected Supabase database with all migrations
+- Fixed search vector function (parameter name collision)
+- Scraped 10+ recipes successfully from multiple sources
+- Added HTML entity cleaning (`&nbsp;` → proper spaces)
+- Set up Supabase Management API for SQL execution
+- Seeded 18 domains and test URLs
 
-**Files Created:** 36 TypeScript/TSX files
+**Recipes Indexed:**
+- Budget Bytes, AllRecipes, Serious Eats
+- King Arthur Baking, Cookie and Kate, Skinnytaste
+
 **Build Status:** Passing
 
-**Next Session Should:**
-1. Set up Supabase project and run migrations
-2. Create .env.local with Supabase credentials
-3. Build scraping API routes (/api/scrape, /api/cron/scrape)
-4. Create seed-urls.ts script for initial recipes
-5. Test full scrape → display flow
+---
+
+### 2025-12-15 (Session 2) - API Routes & Seed Scripts
+
+- Created `/api/scrape`, `/api/cron/scrape`, `/api/cron/discover`
+- Added migration `003_domain_functions.sql`
+- Created seed scripts for domains and test URLs
+
+---
+
+### 2025-12-15 (Session 1) - MVP Build
+
+- Built complete Next.js 16 application
+- Created Bold & Playful design system
+- Implemented all pages and components
+- Built scraping pipeline
+- Created database schema
+
+---
 
 ### 2025-12-13 - Initial Planning
 
-- User presented problem: wife frustrated with recipe site bloat
-- Researched legal aspects of recipe aggregation
-- Confirmed: recipes not copyrightable, schema.org is fair game
-- Designed full aggregator + search approach
-- Named project "Simmer" - "Let it simmer"
-- Created initial planning document
+- Named project "Simmer"
+- Confirmed legal approach (schema.org)
+- Designed architecture
 
 ---
 
-## 6. Success Metrics
+## 5. Key Decisions (Final)
 
-| Metric | 6 Month | 12 Month |
-|--------|---------|----------|
-| Recipes Indexed | 500K | 2M |
-| Monthly Visitors | 50K | 200K |
-| Shopping List Clicks | 5K | 25K |
-| Monthly Revenue | $500-1K | $2-5K |
-
----
-
-## 7. Key Decisions (DO NOT CHANGE)
-
-These decisions have been made and should not be revisited:
-
-1. **Aggregate via schema.org only** - No scraping of non-structured content
-2. **Always credit sources** - Every recipe links to original
-3. **No photo scraping** - Copyright violation
-4. **Stack**: Next.js + Supabase + Tailwind + Railway
-5. **Primary monetization**: Affiliate links (Instacart, Amazon)
-6. **Design style**: Bold & Playful (not minimal or warm/cozy)
-7. **Light mode only** for MVP (dark mode later)
-8. **Local dev port**: 3388
+1. **schema.org only** - No scraping prose
+2. **Always credit sources** - Link to original
+3. **No photos** - Copyright risk
+4. **Stack**: Next.js + Supabase + Railway
+5. **Monetization**: Affiliate links
+6. **Design**: Bold & Playful
+7. **Light mode only** (MVP)
+8. **Port 3388** (local dev)
 
 ---
 
-## 8. Open Questions (Future Decisions)
+## 6. Next Steps
 
-- Exact affiliate program partnerships (need to apply)
-- Whether to allow user recipe submissions
-- Meal planning feature scope
-- Mobile app potential
-- Premium tier features (if any)
-- Custom domain selection
+1. [ ] Deploy to Railway
+2. [ ] Scale scraping to 1000+ recipes
+3. [ ] Apply for affiliate programs
+4. [ ] Add analytics (Plausible)
 
 ---
 
-## Appendix: Top Recipe Sites for Seeding
+## Appendix: Recipe Sources
 
-### Tier 1 (High Quality schema.org)
-1. AllRecipes.com
-2. Food Network
-3. Serious Eats
-4. Bon Appetit
-5. Epicurious
-6. BBC Good Food
-7. Taste of Home
+**Tier 1**: AllRecipes, Food Network, Serious Eats, Bon Appetit, Epicurious, BBC Good Food, Taste of Home
 
-### Tier 2 (Good Coverage)
-8. Delish
-9. Simply Recipes
-10. Budget Bytes
-11. Minimalist Baker
-12. Cookie and Kate
-13. Smitten Kitchen
-14. Pioneer Woman
+**Tier 2**: Delish, Simply Recipes, Budget Bytes, Minimalist Baker, Cookie and Kate, Smitten Kitchen, Pioneer Woman
 
-### Tier 3 (Niche/Diet-Specific)
-15. Skinnytaste (healthy)
-16. Diet Doctor (keto)
-17. Oh She Glows (vegan)
-18. King Arthur Baking (baking)
-
-**Note:** NYT Cooking has a paywall - skip for now.
+**Tier 3**: Skinnytaste, Diet Doctor, Oh She Glows, King Arthur Baking

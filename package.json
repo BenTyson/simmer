@@ -2,11 +2,16 @@
   "name": "simmer",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev --port 3388",
     "build": "next build",
-    "start": "next start --port 3388",
-    "lint": "eslint"
+    "start": "next start -p ${PORT:-3388}",
+    "lint": "eslint",
+    "seed:domains": "tsx scripts/seed-domains.ts",
+    "seed:test": "tsx scripts/seed-test-urls.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",
@@ -26,9 +31,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "supabase": "^2.67.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
