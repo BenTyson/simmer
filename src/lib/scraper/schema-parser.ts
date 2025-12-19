@@ -132,8 +132,8 @@ function isRecipeType(type: unknown): boolean {
  * Parse ISO 8601 duration to minutes
  * Examples: PT1H30M -> 90, PT45M -> 45, PT2H -> 120
  */
-export function parseDuration(duration: string | undefined): number | null {
-  if (!duration) return null;
+export function parseDuration(duration: string | undefined | null): number | null {
+  if (!duration || typeof duration !== 'string') return null;
 
   const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return null;
@@ -150,12 +150,17 @@ export function parseDuration(duration: string | undefined): number | null {
  * Examples: "4 servings", "12 cookies", "4", "Makes 6"
  */
 export function parseServings(
-  yield_: string | string[] | undefined
+  yield_: string | string[] | number | undefined | null
 ): { servings: number; unit: string } | null {
   if (!yield_) return null;
 
+  // Handle number directly
+  if (typeof yield_ === 'number') {
+    return { servings: yield_, unit: 'servings' };
+  }
+
   const text = Array.isArray(yield_) ? yield_[0] : yield_;
-  if (!text) return null;
+  if (!text || typeof text !== 'string') return null;
 
   // Try to extract number
   const match = text.match(/(\d+)/);
@@ -227,11 +232,18 @@ export function normalizeArray(value: string | string[] | undefined): string[] {
 }
 
 /**
- * Parse nutrition value from string
- * Examples: "200 calories", "15g", "150mg"
+ * Parse nutrition value from string or number
+ * Examples: "200 calories", "15g", "150mg", 200
  */
-export function parseNutritionValue(value: string | undefined): number | null {
-  if (!value) return null;
+export function parseNutritionValue(value: string | number | undefined | null): number | null {
+  if (value === null || value === undefined) return null;
+
+  // Handle number directly
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (typeof value !== 'string') return null;
 
   const match = value.match(/(\d+(?:\.\d+)?)/);
   if (!match) return null;
