@@ -7,6 +7,7 @@ import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
 import { useShoppingList } from '@/store/shopping-list';
 import { cn } from '@/lib/utils/cn';
+import { openInstacartWithItems } from '@/lib/utils/instacart';
 import type { ShoppingListItem } from '@/types/recipe';
 
 export default function ShoppingListPage() {
@@ -129,7 +130,7 @@ export default function ShoppingListPage() {
                 <Button
                   variant="primary"
                   className="flex-1"
-                  onClick={() => openInstacart(items)}
+                  onClick={() => openInstacartWithItems(items)}
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Open in Instacart
@@ -216,18 +217,6 @@ function groupByRecipe(items: ShoppingListItem[]): Map<string | undefined, Shopp
   }
 
   return grouped;
-}
-
-// Open Instacart with items (simplified - real implementation would use their API)
-function openInstacart(items: ShoppingListItem[]) {
-  const unchecked = items.filter((item) => !item.checked);
-  const query = unchecked.map((item) => item.text).join(', ');
-
-  // This would be replaced with actual Instacart API integration
-  window.open(
-    `https://www.instacart.com/store/search?q=${encodeURIComponent(query)}`,
-    '_blank'
-  );
 }
 
 // Copy list to clipboard

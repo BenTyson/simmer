@@ -45,6 +45,31 @@ const categories = [
   { name: 'Soups', href: '/category/soup', color: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' },
 ];
 
+const proteins = [
+  { name: 'Chicken', href: '/protein/chicken', emoji: '🍗' },
+  { name: 'Beef', href: '/protein/beef', emoji: '🥩' },
+  { name: 'Pork', href: '/protein/pork', emoji: '🥓' },
+  { name: 'Fish', href: '/protein/fish', emoji: '🐟' },
+  { name: 'Seafood', href: '/protein/seafood', emoji: '🦐' },
+  { name: 'Tofu', href: '/protein/tofu', emoji: '🧊' },
+];
+
+const quickMeals = [
+  { name: '15 Minutes', href: '/time/15-minutes', color: 'bg-green-100 text-green-700 hover:bg-green-200' },
+  { name: '30 Minutes', href: '/time/30-minutes', color: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' },
+  { name: '45 Minutes', href: '/time/45-minutes', color: 'bg-teal-100 text-teal-700 hover:bg-teal-200' },
+  { name: 'Under 1 Hour', href: '/time/1-hour', color: 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200' },
+];
+
+const cookingMethods = [
+  { name: 'Grilled', href: '/method/grilled', emoji: '🔥' },
+  { name: 'Baked', href: '/method/baked', emoji: '🍞' },
+  { name: 'Fried', href: '/method/fried', emoji: '🍳' },
+  { name: 'Slow Cooker', href: '/method/slow-cooker', emoji: '🥘' },
+  { name: 'Instant Pot', href: '/method/instant-pot', emoji: '⚡' },
+  { name: 'No-Cook', href: '/method/no-cook', emoji: '🥗' },
+];
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app';
 
 // Structured data for homepage
@@ -217,6 +242,81 @@ export default function HomePage() {
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
+          </div>
+        </Container>
+      </section>
+
+      {/* Protein Section */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-neutral-900">
+              Browse by protein
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {proteins.map((protein) => (
+              <Link
+                key={protein.name}
+                href={protein.href}
+                className="bg-orange-50 hover:bg-orange-100 rounded-2xl p-6 text-center font-semibold transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <span className="text-2xl mb-2 block">{protein.emoji}</span>
+                {protein.name}
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Quick Meals Section */}
+      <section className="py-16">
+        <Container>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-neutral-900">
+                Quick meals
+              </h2>
+              <p className="text-neutral-600 mt-1">When you&apos;re short on time</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickMeals.map((meal) => (
+              <Link
+                key={meal.name}
+                href={meal.href}
+                className={`${meal.color} rounded-2xl p-6 text-center font-semibold transition-all duration-200 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2`}
+              >
+                <Clock className="w-5 h-5" />
+                {meal.name}
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Cooking Methods Section */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-neutral-900">
+              By cooking method
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {cookingMethods.map((method) => (
+              <Link
+                key={method.name}
+                href={method.href}
+                className="bg-amber-50 hover:bg-amber-100 rounded-2xl p-6 text-center font-semibold transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <span className="text-2xl mb-2 block">{method.emoji}</span>
+                {method.name}
+              </Link>
+            ))}
           </div>
         </Container>
       </section>
