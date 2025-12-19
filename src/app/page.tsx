@@ -45,9 +45,53 @@ const categories = [
   { name: 'Soups', href: '/category/soup', color: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' },
 ];
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app';
+
+// Structured data for homepage
+function HomePageSchema() {
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Simmer',
+    url: BASE_URL,
+    description: 'Recipe search without the bloat. Find recipes, scale ingredients, and create shopping lists.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${BASE_URL}/search?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Simmer',
+    url: BASE_URL,
+    logo: `${BASE_URL}/icon.png`,
+    sameAs: [],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+    </>
+  );
+}
+
 export default function HomePage() {
   return (
     <>
+      <HomePageSchema />
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background decoration */}
