@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withPlausibleProxy } from 'next-plausible';
 
 const nextConfig: NextConfig = {
   // Standalone output for Railway deployment
@@ -38,4 +39,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPlausibleProxy()(nextConfig);

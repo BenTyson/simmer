@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Nunito } from 'next/font/google';
+import PlausibleProvider from 'next-plausible';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import './globals.css';
@@ -59,6 +60,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${nunito.variable}`}>
+      <head>
+        <PlausibleProvider
+          domain="simmer-production.up.railway.app"
+          trackOutboundLinks
+        />
+      </head>
       <body className="min-h-screen flex flex-col antialiased">
         <Header />
         <main className="flex-1">{children}</main>
