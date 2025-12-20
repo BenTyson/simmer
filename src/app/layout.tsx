@@ -63,6 +63,10 @@ export default function RootLayout({
       <head>
         <PlausibleProvider
           domain="simmer-production.up.railway.app"
+          customDomain="https://plausible.io"
+          scriptProps={{
+            src: "https://plausible.io/js/pa-QMBwFHDOGIiq2n7iw1eEC.js",
+          }}
           trackOutboundLinks
         />
       </head>
