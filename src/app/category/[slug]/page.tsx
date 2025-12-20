@@ -100,7 +100,7 @@ async function getCategoryRecipes(categorySlug: string): Promise<RecipeSearchRes
     .eq('is_deleted', false)
     .contains('category', [category.name])
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(100);
 
   if (error) {
     console.error('Category fetch error:', error);

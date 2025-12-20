@@ -65,7 +65,7 @@ async function getVegetableRecipes(vegetableSlug: string): Promise<RecipeSearchR
     .from('recipes')
     .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
     .eq('is_deleted', false)
-    .in('id', recipeIds.slice(0, 50))
+    .in('id', recipeIds.slice(0, 100))
     .order('created_at', { ascending: false });
 
   if (error) {

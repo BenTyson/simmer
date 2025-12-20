@@ -46,7 +46,7 @@ async function getTimeRecipes(timeSlug: string): Promise<RecipeSearchResult[]> {
     .not('total_time', 'is', null)
     .lte('total_time', time.maxMinutes)
     .order('total_time', { ascending: true })
-    .limit(50);
+    .limit(100);
 
   if (error) {
     console.error('Time fetch error:', error);

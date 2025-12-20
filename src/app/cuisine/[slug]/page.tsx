@@ -123,7 +123,7 @@ async function getCuisineRecipes(cuisineSlug: string): Promise<RecipeSearchResul
     .eq('is_deleted', false)
     .contains('cuisine', [cuisine.name])
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(100);
 
   if (error) {
     console.error('Cuisine fetch error:', error);

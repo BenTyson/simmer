@@ -98,7 +98,7 @@ async function getDietRecipes(dietSlug: string): Promise<RecipeSearchResult[]> {
     .eq('is_deleted', false)
     .contains('diet_tags', [diet.name])
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(100);
 
   if (error) {
     console.error('Diet fetch error:', error);
