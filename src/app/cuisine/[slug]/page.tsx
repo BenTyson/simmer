@@ -2,13 +2,15 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Container } from '@/components/layout/Container';
-import { RecipeGrid } from '@/components/recipe/RecipeCard';
+import { BrowseRecipes } from '@/components/recipe/BrowseRecipes';
 import { SearchResultsSkeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft } from 'lucide-react';
 import { createServerClient } from '@/lib/db/client';
 import type { Metadata } from 'next';
 import type { RecipeSearchResult } from '@/types/recipe';
+
+const PAGE_SIZE = 48;
 
 // Valid cuisines with display names and descriptions
 const CUISINES: Record<string, { name: string; description: string; emoji: string }> = {
@@ -111,26 +113,34 @@ export async function generateMetadata({ params }: CuisinePageProps): Promise<Me
   };
 }
 
-async function getCuisineRecipes(cuisineSlug: string): Promise<RecipeSearchResult[]> {
+async function getCuisineRecipesWithCount(cuisineSlug: string): Promise<{ recipes: RecipeSearchResult[]; totalCount: number }> {
   const supabase = createServerClient();
   const cuisine = CUISINES[cuisineSlug];
 
-  if (!cuisine) return [];
+  if (!cuisine) return { recipes: [], totalCount: 0 };
 
+  // Get total count
+  const { count } = await supabase
+    .from('recipes')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_deleted', false)
+    .contains('cuisine', [cuisine.name]);
+
+  // Get first page of recipes
   const { data, error } = await supabase
     .from('recipes')
     .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
     .eq('is_deleted', false)
     .contains('cuisine', [cuisine.name])
     .order('created_at', { ascending: false })
-    .limit(100);
+    .limit(PAGE_SIZE);
 
   if (error) {
     console.error('Cuisine fetch error:', error);
-    return [];
+    return { recipes: [], totalCount: 0 };
   }
 
-  return (data || []).map((row) => ({
+  const recipes = (data || []).map((row) => ({
     id: row.id,
     slug: row.slug,
     name: row.name,
@@ -145,10 +155,12 @@ async function getCuisineRecipes(cuisineSlug: string): Promise<RecipeSearchResul
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
   }));
+
+  return { recipes, totalCount: count || 0 };
 }
 
 async function CuisineResults({ slug }: { slug: string }) {
-  const recipes = await getCuisineRecipes(slug);
+  const { recipes, totalCount } = await getCuisineRecipesWithCount(slug);
   const cuisine = CUISINES[slug];
 
   if (recipes.length === 0) {
@@ -171,12 +183,12 @@ async function CuisineResults({ slug }: { slug: string }) {
   }
 
   return (
-    <>
-      <p className="text-sm text-neutral-500 mb-6">
-        {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
-      </p>
-      <RecipeGrid recipes={recipes} />
-    </>
+    <BrowseRecipes
+      initialRecipes={recipes}
+      totalCount={totalCount}
+      filterType="cuisine"
+      filterValue={slug}
+    />
   );
 }
 

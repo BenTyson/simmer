@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Container } from '@/components/layout/Container';
-import { RecipeGrid } from '@/components/recipe/RecipeCard';
+import { BrowseRecipes } from '@/components/recipe/BrowseRecipes';
 import { SearchResultsSkeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Clock } from 'lucide-react';
@@ -10,6 +10,8 @@ import { createServerClient } from '@/lib/db/client';
 import { COOKING_TIMES } from '@/lib/utils/recipe-filters';
 import type { Metadata } from 'next';
 import type { RecipeSearchResult } from '@/types/recipe';
+
+const PAGE_SIZE = 48;
 
 interface TimePageProps {
   params: Promise<{ slug: string }>;
@@ -33,12 +35,21 @@ export async function generateMetadata({ params }: TimePageProps): Promise<Metad
   };
 }
 
-async function getTimeRecipes(timeSlug: string): Promise<RecipeSearchResult[]> {
+async function getTimeRecipesWithCount(timeSlug: string): Promise<{ recipes: RecipeSearchResult[]; totalCount: number }> {
   const supabase = createServerClient();
   const time = COOKING_TIMES[timeSlug];
 
-  if (!time) return [];
+  if (!time) return { recipes: [], totalCount: 0 };
 
+  // Get total count
+  const { count } = await supabase
+    .from('recipes')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_deleted', false)
+    .not('total_time', 'is', null)
+    .lte('total_time', time.maxMinutes);
+
+  // Get first page of recipes
   const { data, error } = await supabase
     .from('recipes')
     .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
@@ -46,14 +57,14 @@ async function getTimeRecipes(timeSlug: string): Promise<RecipeSearchResult[]> {
     .not('total_time', 'is', null)
     .lte('total_time', time.maxMinutes)
     .order('total_time', { ascending: true })
-    .limit(100);
+    .limit(PAGE_SIZE);
 
   if (error) {
     console.error('Time fetch error:', error);
-    return [];
+    return { recipes: [], totalCount: 0 };
   }
 
-  return (data || []).map((row) => ({
+  const recipes = (data || []).map((row) => ({
     id: row.id,
     slug: row.slug,
     name: row.name,
@@ -68,10 +79,12 @@ async function getTimeRecipes(timeSlug: string): Promise<RecipeSearchResult[]> {
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
   }));
+
+  return { recipes, totalCount: count || 0 };
 }
 
 async function TimeResults({ slug }: { slug: string }) {
-  const recipes = await getTimeRecipes(slug);
+  const { recipes, totalCount } = await getTimeRecipesWithCount(slug);
   const time = COOKING_TIMES[slug];
 
   if (recipes.length === 0) {
@@ -94,12 +107,12 @@ async function TimeResults({ slug }: { slug: string }) {
   }
 
   return (
-    <>
-      <p className="text-sm text-neutral-500 mb-6">
-        {recipes.length} recipe{recipes.length !== 1 ? 's' : ''} ready in {time?.maxMinutes} minutes or less
-      </p>
-      <RecipeGrid recipes={recipes} />
-    </>
+    <BrowseRecipes
+      initialRecipes={recipes}
+      totalCount={totalCount}
+      filterType="time"
+      filterValue={slug}
+    />
   );
 }
 

@@ -2,13 +2,15 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Container } from '@/components/layout/Container';
-import { RecipeGrid } from '@/components/recipe/RecipeCard';
+import { BrowseRecipes } from '@/components/recipe/BrowseRecipes';
 import { SearchResultsSkeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft } from 'lucide-react';
 import { createServerClient } from '@/lib/db/client';
 import type { Metadata } from 'next';
 import type { RecipeSearchResult } from '@/types/recipe';
+
+const PAGE_SIZE = 48;
 
 // Valid diets with display names and descriptions
 const DIETS: Record<string, { name: string; description: string; color: string }> = {
@@ -86,26 +88,34 @@ export async function generateMetadata({ params }: DietPageProps): Promise<Metad
   };
 }
 
-async function getDietRecipes(dietSlug: string): Promise<RecipeSearchResult[]> {
+async function getDietRecipesWithCount(dietSlug: string): Promise<{ recipes: RecipeSearchResult[]; totalCount: number }> {
   const supabase = createServerClient();
   const diet = DIETS[dietSlug];
 
-  if (!diet) return [];
+  if (!diet) return { recipes: [], totalCount: 0 };
 
+  // Get total count
+  const { count } = await supabase
+    .from('recipes')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_deleted', false)
+    .contains('diet_tags', [diet.name]);
+
+  // Get first page of recipes
   const { data, error } = await supabase
     .from('recipes')
     .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
     .eq('is_deleted', false)
     .contains('diet_tags', [diet.name])
     .order('created_at', { ascending: false })
-    .limit(100);
+    .limit(PAGE_SIZE);
 
   if (error) {
     console.error('Diet fetch error:', error);
-    return [];
+    return { recipes: [], totalCount: 0 };
   }
 
-  return (data || []).map((row) => ({
+  const recipes = (data || []).map((row) => ({
     id: row.id,
     slug: row.slug,
     name: row.name,
@@ -120,10 +130,12 @@ async function getDietRecipes(dietSlug: string): Promise<RecipeSearchResult[]> {
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
   }));
+
+  return { recipes, totalCount: count || 0 };
 }
 
 async function DietResults({ slug }: { slug: string }) {
-  const recipes = await getDietRecipes(slug);
+  const { recipes, totalCount } = await getDietRecipesWithCount(slug);
   const diet = DIETS[slug];
 
   if (recipes.length === 0) {
@@ -146,12 +158,12 @@ async function DietResults({ slug }: { slug: string }) {
   }
 
   return (
-    <>
-      <p className="text-sm text-neutral-500 mb-6">
-        {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
-      </p>
-      <RecipeGrid recipes={recipes} />
-    </>
+    <BrowseRecipes
+      initialRecipes={recipes}
+      totalCount={totalCount}
+      filterType="diet"
+      filterValue={slug}
+    />
   );
 }
 

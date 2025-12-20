@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Container } from '@/components/layout/Container';
-import { RecipeGrid } from '@/components/recipe/RecipeCard';
+import { BrowseRecipes } from '@/components/recipe/BrowseRecipes';
 import { SearchResultsSkeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft } from 'lucide-react';
@@ -10,6 +10,8 @@ import { createServerClient } from '@/lib/db/client';
 import { VEGETABLES } from '@/lib/utils/recipe-filters';
 import type { Metadata } from 'next';
 import type { RecipeSearchResult } from '@/types/recipe';
+
+const PAGE_SIZE = 48;
 
 interface VegetablePageProps {
   params: Promise<{ slug: string }>;
@@ -33,11 +35,11 @@ export async function generateMetadata({ params }: VegetablePageProps): Promise<
   };
 }
 
-async function getVegetableRecipes(vegetableSlug: string): Promise<RecipeSearchResult[]> {
+async function getVegetableRecipesWithCount(vegetableSlug: string): Promise<{ recipes: RecipeSearchResult[]; totalCount: number }> {
   const supabase = createServerClient();
   const vegetable = VEGETABLES[vegetableSlug];
 
-  if (!vegetable) return [];
+  if (!vegetable) return { recipes: [], totalCount: 0 };
 
   // Build OR filter for keywords
   const orFilters = vegetable.keywords.map(kw => `item.ilike.%${kw}%`).join(',');
@@ -50,30 +52,33 @@ async function getVegetableRecipes(vegetableSlug: string): Promise<RecipeSearchR
 
   if (ingError) {
     console.error('Vegetable ingredient fetch error:', ingError);
-    return [];
+    return { recipes: [], totalCount: 0 };
   }
 
   if (!ingredientMatches || ingredientMatches.length === 0) {
-    return [];
+    return { recipes: [], totalCount: 0 };
   }
 
   // Get unique recipe IDs
   const recipeIds = [...new Set(ingredientMatches.map(i => i.recipe_id))];
+  const totalCount = recipeIds.length;
 
-  // Fetch the recipes
+  // Get first page of recipes
+  const paginatedIds = recipeIds.slice(0, PAGE_SIZE);
+
   const { data, error } = await supabase
     .from('recipes')
     .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
     .eq('is_deleted', false)
-    .in('id', recipeIds.slice(0, 100))
+    .in('id', paginatedIds)
     .order('created_at', { ascending: false });
 
   if (error) {
     console.error('Vegetable recipes fetch error:', error);
-    return [];
+    return { recipes: [], totalCount: 0 };
   }
 
-  return (data || []).map((row) => ({
+  const recipes = (data || []).map((row) => ({
     id: row.id,
     slug: row.slug,
     name: row.name,
@@ -88,10 +93,12 @@ async function getVegetableRecipes(vegetableSlug: string): Promise<RecipeSearchR
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
   }));
+
+  return { recipes, totalCount };
 }
 
 async function VegetableResults({ slug }: { slug: string }) {
-  const recipes = await getVegetableRecipes(slug);
+  const { recipes, totalCount } = await getVegetableRecipesWithCount(slug);
   const vegetable = VEGETABLES[slug];
 
   if (recipes.length === 0) {
@@ -114,12 +121,12 @@ async function VegetableResults({ slug }: { slug: string }) {
   }
 
   return (
-    <>
-      <p className="text-sm text-neutral-500 mb-6">
-        {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
-      </p>
-      <RecipeGrid recipes={recipes} />
-    </>
+    <BrowseRecipes
+      initialRecipes={recipes}
+      totalCount={totalCount}
+      filterType="vegetable"
+      filterValue={slug}
+    />
   );
 }
 
