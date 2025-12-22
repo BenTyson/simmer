@@ -1,6 +1,6 @@
 # Simmer - Technical Architecture
 
-> **Last Updated**: 2025-12-16
+> **Last Updated**: 2025-12-22
 > **Related**: [SESSION-START.md](./SESSION-START.md) | [SIMMER.md](./SIMMER.md)
 
 ---
@@ -78,6 +78,8 @@ simmer/
 │   │   │   ├── Card.tsx
 │   │   │   ├── Badge.tsx
 │   │   │   ├── Skeleton.tsx
+│   │   │   ├── StarRating.tsx      # Display star rating
+│   │   │   ├── StarInput.tsx       # Interactive star input
 │   │   │   └── index.ts
 │   │   ├── layout/                # Layout components
 │   │   │   ├── Header.tsx
@@ -91,6 +93,12 @@ simmer/
 │   │   │   ├── Instructions.tsx
 │   │   │   ├── SourceAttribution.tsx
 │   │   │   ├── RecipeSchema.tsx
+│   │   │   ├── ReviewCard.tsx      # Single review display
+│   │   │   ├── ReviewForm.tsx      # Review submission form
+│   │   │   ├── ReviewList.tsx      # Paginated review list
+│   │   │   ├── ReviewsSection.tsx  # Wrapper for recipe pages
+│   │   │   ├── RecipeFilters.tsx   # Cuisine/diet/time/rating filters
+│   │   │   ├── BrowseRecipes.tsx   # Browse grid with filters + pagination
 │   │   │   └── index.ts
 │   │   ├── search/
 │   │   │   ├── SearchBar.tsx
@@ -123,7 +131,8 @@ simmer/
 │       ├── 001_initial_schema.sql # Core tables
 │       ├── 002_fts_search.sql     # FTS setup
 │       ├── 003_domain_functions.sql # Domain stats
-│       └── 004_fix_search_vector.sql # Parameter fix
+│       ├── 004_fix_search_vector.sql # Parameter fix
+│       └── 005_reviews.sql          # Reviews & ratings system
 │
 ├── public/                        # Static assets
 │
@@ -166,6 +175,10 @@ interface Recipe {
   sourceUrl: string;
   sourceDomain: string;
   sourceName: string | null;
+
+  // Ratings (auto-calculated via trigger)
+  avgRating: number | null;     // 1.0-5.0, null if no reviews
+  reviewCount: number;          // 0 if no reviews
 
   // Timestamps
   createdAt: string;
@@ -222,6 +235,21 @@ interface Nutrition {
 }
 ```
 
+### Review
+
+```typescript
+interface Review {
+  id: string;
+  recipeId: string;
+  authorName: string;          // User-provided name
+  rating: number;              // 1-5 stars
+  title: string | null;        // Optional title
+  comment: string;             // Required, min 10 chars
+  helpfulCount: number;        // "Was this helpful?" votes
+  createdAt: string;
+}
+```
+
 ### Shopping List Item (Client-Side Only)
 
 ```typescript
@@ -243,14 +271,25 @@ interface ShoppingListItem {
 
 ```sql
 -- Core tables
-recipes              -- Main recipe data
+recipes              -- Main recipe data + avg_rating, review_count
 ingredients          -- Parsed ingredients (FK: recipe_id)
 instructions         -- Step-by-step (FK: recipe_id)
 nutrition            -- Optional nutrition (FK: recipe_id)
+reviews              -- User reviews (FK: recipe_id)
 
 -- Scraping infrastructure
 scrape_queue         -- URLs to scrape
 scrape_domains       -- Per-domain config & stats
+```
+
+### Reviews Trigger
+
+```sql
+-- Automatically updates recipes.avg_rating and recipes.review_count
+-- when reviews are inserted, updated, or deleted
+CREATE TRIGGER trigger_update_recipe_stats
+AFTER INSERT OR UPDATE OR DELETE ON reviews
+FOR EACH ROW EXECUTE FUNCTION update_recipe_rating_stats();
 ```
 
 ### Key Indexes
@@ -302,6 +341,8 @@ search_recipes(
 | `/api/scrape` | POST | Manual scrape single URL | Bearer CRON_SECRET |
 | `/api/cron/scrape` | POST | Process scrape queue (batch) | Bearer CRON_SECRET |
 | `/api/cron/discover` | POST | Discover URLs from sitemaps | Bearer CRON_SECRET |
+| `/api/recipes/[id]/reviews` | GET | Fetch reviews (paginated, sortable) | None |
+| `/api/recipes/[id]/reviews` | POST | Submit a review | None |
 
 ### Example Usage
 
@@ -324,11 +365,24 @@ curl -X POST http://localhost:3388/api/cron/discover \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
+### Reviews API
+
+```bash
+# Get reviews (with pagination and sorting)
+curl "http://localhost:3388/api/recipes/UUID/reviews?sort=recent&limit=10&offset=0"
+
+# Submit a review
+curl -X POST http://localhost:3388/api/recipes/UUID/reviews \
+  -H "Content-Type: application/json" \
+  -d '{"authorName": "John", "rating": 5, "comment": "Great recipe!"}'
+```
+
 ### Future Routes
 
 | Route | Method | Purpose |
 |-------|--------|---------|
 | `/api/search` | GET | Search recipes (optional, can use server components) |
+| `/api/reviews/[id]/helpful` | POST | Increment helpful count |
 
 ---
 

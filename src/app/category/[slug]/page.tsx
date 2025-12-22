@@ -104,7 +104,7 @@ async function getCategoryRecipesWithCount(categorySlug: string): Promise<{ reci
   // Get first page of recipes
   const { data, error } = await supabase
     .from('recipes')
-    .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+    .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
     .eq('is_deleted', false)
     .contains('category', [category.name])
     .order('created_at', { ascending: false })
@@ -129,6 +129,8 @@ async function getCategoryRecipesWithCount(categorySlug: string): Promise<{ reci
     dietTags: row.diet_tags || [],
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
+    avgRating: row.avg_rating,
+    reviewCount: row.review_count || 0,
   }));
 
   return { recipes, totalCount: count || 0 };

@@ -26,12 +26,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
           // Variants
           {
-            // Primary - Coral orange with shadow
-            'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-md hover:shadow-lg hover:shadow-primary-500/25 hover:-translate-y-0.5 active:translate-y-0':
+            // Primary - Coral orange with shadow and playful hover
+            'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-md hover:shadow-lg hover:shadow-primary-500/25 hover:-translate-y-1 hover:rotate-[-0.5deg] active:translate-y-0 active:rotate-0':
               variant === 'primary',
 
-            // Secondary - Teal accent
-            'bg-secondary-500 text-white hover:bg-secondary-600 active:bg-secondary-700 shadow-md hover:shadow-lg hover:shadow-secondary-500/25 hover:-translate-y-0.5 active:translate-y-0':
+            // Secondary - Teal accent with playful hover
+            'bg-secondary-500 text-white hover:bg-secondary-600 active:bg-secondary-700 shadow-md hover:shadow-lg hover:shadow-secondary-500/25 hover:-translate-y-1 hover:rotate-[-0.5deg] active:translate-y-0 active:rotate-0':
               variant === 'secondary',
 
             // Outline - Border only

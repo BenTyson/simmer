@@ -23,6 +23,8 @@ function transformRecipe(row: Record<string, unknown>): Recipe {
     sourceName: row.source_name as string | null,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
+    avgRating: row.avg_rating as number | null,
+    reviewCount: (row.review_count as number) || 0,
   };
 }
 

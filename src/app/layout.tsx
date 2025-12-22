@@ -3,7 +3,12 @@ import { Inter, Nunito } from 'next/font/google';
 import PlausibleProvider from 'next-plausible';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { BottomNav } from '@/components/layout/BottomNav';
 import './globals.css';
+
+// Extract domain from NEXT_PUBLIC_SITE_URL for Plausible analytics
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app';
+const plausibleDomain = new URL(siteUrl).hostname;
 
 const inter = Inter({
   variable: '--font-inter',
@@ -19,6 +24,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app'),
   title: {
     default: 'Simmer - Recipe Search Without the Bloat',
     template: '%s | Simmer',
@@ -62,7 +68,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${nunito.variable}`}>
       <head>
         <PlausibleProvider
-          domain="simmer-production.up.railway.app"
+          domain={plausibleDomain}
           customDomain="https://plausible.io"
           scriptProps={{
             src: "https://plausible.io/js/pa-QMBwFHDOGIiq2n7iw1eEC.js",
@@ -70,10 +76,11 @@ export default function RootLayout({
           trackOutboundLinks
         />
       </head>
-      <body className="min-h-screen flex flex-col antialiased">
+      <body className="min-h-screen flex flex-col antialiased pb-16 md:pb-0">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <BottomNav />
       </body>
     </html>
   );

@@ -109,21 +109,21 @@ export function IngredientList({ ingredients, recipeId, recipeName }: Ingredient
               </span>
             </label>
 
-            {/* Add to list button */}
+            {/* Add to list button - visible on mobile, hover on desktop */}
             <button
               onClick={() => addToShoppingList(ingredient)}
               className={cn(
-                'p-1.5 rounded-lg transition-all',
+                'p-2 rounded-lg transition-all flex-shrink-0',
                 addedItems.has(ingredient.id)
-                  ? 'opacity-100 text-green-600 bg-green-50'
-                  : 'opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-primary-600 hover:bg-primary-50'
+                  ? 'text-green-600 bg-green-50'
+                  : 'text-neutral-400 sm:opacity-0 sm:group-hover:opacity-100 hover:text-primary-600 hover:bg-primary-50 active:bg-primary-100'
               )}
               title={addedItems.has(ingredient.id) ? 'Added!' : 'Add to shopping list'}
             >
               {addedItems.has(ingredient.id) ? (
-                <Check className="w-4 h-4" />
+                <Check className="w-5 h-5" />
               ) : (
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5" />
               )}
             </button>
           </li>

@@ -1,7 +1,7 @@
 # SIMMER - Project Overview
 
-> **Last Updated**: 2025-12-16
-> **Status**: Database Connected - Scraping Operational
+> **Last Updated**: 2025-12-22
+> **Status**: MVP Complete - Preparing for Public Launch
 > **Local Dev**: `http://localhost:3388`
 > **Tagline**: "Let it simmer"
 
@@ -61,15 +61,50 @@ A recipe aggregator that strips away stories, ads, and fluff from recipe sites. 
 
 ## 4. Session Log
 
+### 2025-12-22 - Recipe Filters & Launch Prep
+
+**Accomplished:**
+- Added comprehensive filtering to all browse pages
+- RecipeFilters component: cuisine, diet, time, rating filters
+- Filters combine with primary browse filter (e.g., filter breakfast by Italian + Vegetarian)
+- Updated API to support combined filter parameters
+- Conducted launch readiness review
+
+**Launch Blockers Identified:**
+- Missing: sitemap.xml, error pages, favicon set, OG image, loading states
+- Plausible domain hardcoded to Railway URL
+- Need custom domain
+
+**Build Status:** Passing
+
+---
+
+### 2025-12-21 - Ratings & Reviews System
+
+**Accomplished:**
+- Built complete anonymous reviews system
+- Database: `reviews` table with trigger for auto-updating `avg_rating`/`review_count` on recipes
+- Components: StarRating, StarInput, ReviewForm, ReviewList, ReviewCard, ReviewsSection
+- API: GET/POST `/api/recipes/[id]/reviews` with pagination and sorting
+- Integration: Ratings display on RecipeCard and recipe detail pages
+- Updated all browse pages to include rating fields
+
+**Build Status:** Passing
+
+---
+
 ### 2025-12-16 - Database Connected & Scraping Operational
 
 **Accomplished:**
 - Connected Supabase database with all migrations
 - Fixed search vector function (parameter name collision)
-- Scraped 10+ recipes successfully from multiple sources
+- Scraped 458+ recipes successfully from multiple sources
 - Added HTML entity cleaning (`&nbsp;` → proper spaces)
 - Set up Supabase Management API for SQL execution
 - Seeded 18 domains and test URLs
+- Built all browse pages (category, cuisine, diet, protein, time, method, vegetable)
+- Added Load More pagination to all browse pages
+- Integrated Plausible analytics
 
 **Recipes Indexed:**
 - Budget Bytes, AllRecipes, Serious Eats
@@ -120,10 +155,25 @@ A recipe aggregator that strips away stories, ads, and fluff from recipe sites. 
 
 ## 6. Next Steps
 
-1. [ ] Deploy to Railway
+### Launch Blockers (Do First)
+1. [ ] Create dynamic sitemap.xml
+2. [ ] Create error pages (not-found.tsx, error.tsx, global-error.tsx)
+3. [ ] Add favicon set and web manifest
+4. [ ] Create default OG image for social sharing
+5. [ ] Add loading.tsx states for suspense boundaries
+6. [ ] Update Plausible domain (currently hardcoded)
+7. [ ] Get custom domain (user working on)
+8. [ ] Run Lighthouse audit
+
+### Post-Launch
+1. [ ] Deploy to Railway with custom domain
 2. [ ] Scale scraping to 1000+ recipes
 3. [ ] Apply for affiliate programs
-4. [ ] Add analytics (Plausible)
+4. [x] ~~Add analytics (Plausible)~~ - Done
+5. [x] ~~Add ratings & reviews~~ - Done
+6. [x] ~~Add recipe filters~~ - Done
+7. [ ] User accounts (optional, for persistent reviews)
+8. [ ] "Was this helpful?" voting on reviews
 
 ---
 

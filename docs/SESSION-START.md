@@ -1,8 +1,8 @@
 # Simmer - AI Agent Session Start
 
 > **READ THIS FIRST** - Essential context for new AI agent sessions
-> **Last Updated**: 2025-12-16
-> **Project Status**: Database Connected - Scraping Operational
+> **Last Updated**: 2025-12-22
+> **Project Status**: MVP Complete - Preparing for Public Launch
 
 ---
 
@@ -42,6 +42,20 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/c
 | `src/app/recipe/[slug]/page.tsx` | Recipe detail view |
 | `src/app/list/page.tsx` | Shopping list (client-side) |
 | `src/app/about/page.tsx` | About + legal info |
+| `src/app/not-found.tsx` | Custom 404 page |
+| `src/app/error.tsx` | Error boundary |
+| `src/app/global-error.tsx` | Root error boundary |
+
+### SEO & Meta Files
+| File | Purpose |
+|------|---------|
+| `src/app/sitemap.ts` | Dynamic sitemap with all recipes |
+| `src/app/robots.ts` | robots.txt configuration |
+| `src/app/manifest.ts` | PWA web manifest |
+| `src/app/icon.tsx` | Dynamic favicon (32x32) |
+| `src/app/apple-icon.tsx` | Apple touch icon (180x180) |
+| `src/app/opengraph-image.tsx` | OG image for social sharing |
+| `src/app/twitter-image.tsx` | Twitter card image |
 
 ### API Routes
 | Route | Method | Purpose |
@@ -50,6 +64,7 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/c
 | `/api/scrape` | POST | Manual single URL scrape |
 | `/api/cron/scrape` | POST | Process queue (batch) |
 | `/api/cron/discover` | POST | Discover URLs from sitemaps |
+| `/api/recipes/[id]/reviews` | GET/POST | Fetch or submit reviews |
 
 ### Core Libraries
 | File | Purpose |
@@ -57,9 +72,19 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/c
 | `src/lib/scraper/index.ts` | Scraping orchestrator |
 | `src/lib/scraper/schema-parser.ts` | JSON-LD + HTML entity cleaning |
 | `src/lib/scraper/ingredient-parser.ts` | Parse "2 cups flour" |
-| `src/lib/db/recipes.ts` | Recipe CRUD |
+| `src/lib/db/recipes.ts` | Recipe CRUD (includes rating fields) |
 | `src/lib/db/search.ts` | FTS queries |
 | `src/store/shopping-list.ts` | Zustand + localStorage |
+
+### Review Components
+| File | Purpose |
+|------|---------|
+| `src/components/ui/StarRating.tsx` | Display star rating (1-5) |
+| `src/components/ui/StarInput.tsx` | Interactive star input |
+| `src/components/recipe/ReviewForm.tsx` | Submit review form |
+| `src/components/recipe/ReviewList.tsx` | Paginated review list |
+| `src/components/recipe/ReviewCard.tsx` | Single review display |
+| `src/components/recipe/ReviewsSection.tsx` | Wrapper for recipe pages |
 
 ### Database Migrations
 | File | Purpose |
@@ -68,6 +93,7 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/c
 | `002_fts_search.sql` | Full-text search |
 | `003_domain_functions.sql` | Domain stats |
 | `004_fix_search_vector.sql` | Parameter name fix |
+| `005_reviews.sql` | Reviews table + rating trigger |
 
 ---
 
@@ -80,6 +106,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 CRON_SECRET=your-secret-key
+NEXT_PUBLIC_SITE_URL=https://your-domain.com  # Used for sitemap, OG images, Plausible
 ```
 
 ---
@@ -90,14 +117,32 @@ CRON_SECRET=your-secret-key
 - [x] All pages rendering
 - [x] Database connected (Supabase)
 - [x] Scraping pipeline operational
-- [x] 10+ recipes indexed from multiple sources
+- [x] 458+ recipes indexed from multiple sources
 - [x] HTML entity cleaning (`&nbsp;` → space)
 - [x] Supabase CLI linked for SQL execution
+- [x] Browse pages (category, cuisine, diet, protein, time, method, vegetable)
+- [x] Load More pagination on all browse pages
+- [x] Ratings & Reviews system (anonymous)
+- [x] Plausible analytics configured (uses NEXT_PUBLIC_SITE_URL)
+- [x] Recipe filters on browse pages (cuisine, diet, time, rating)
+- [x] Dynamic sitemap.xml with all recipes and browse pages
+- [x] robots.txt configured
+- [x] Error pages (not-found.tsx, error.tsx, global-error.tsx)
+- [x] Favicon set (icon.tsx, apple-icon.tsx, icon-192, icon-512)
+- [x] Web manifest (manifest.ts)
+- [x] OG images for social sharing (opengraph-image.tsx, twitter-image.tsx)
+- [x] Loading states for all main routes
+- [x] Lighthouse audit passed (Performance: 68%, A11y: 96%, Best Practices: 100%, SEO: 91%)
+- [x] Color contrast accessibility fixes
 
-### Not Done
+### Not Done - Launch Blockers
+- [ ] Get custom domain (user working on this)
+
+### Not Done - Post-Launch
 - [ ] Production deployment (Railway)
 - [ ] Affiliate link integration
 - [ ] Scale to 1000+ recipes
+- [ ] User accounts (reviews currently anonymous)
 - [ ] Images (intentionally skipped - copyright)
 
 ---

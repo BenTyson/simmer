@@ -186,13 +186,13 @@ function ShoppingItem({
         {item.text}
       </span>
 
-      {/* Remove button */}
+      {/* Remove button - visible on mobile, hover on desktop */}
       <button
         onClick={onRemove}
-        className="opacity-0 group-hover:opacity-100 p-2 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-all"
+        className="sm:opacity-0 sm:group-hover:opacity-100 p-2 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-all"
         title="Remove item"
       >
-        <Trash2 className="w-4 h-4" />
+        <Trash2 className="w-5 h-5" />
       </button>
     </li>
   );

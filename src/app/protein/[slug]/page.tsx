@@ -68,7 +68,7 @@ async function getProteinRecipesWithCount(proteinSlug: string): Promise<{ recipe
 
   const { data, error } = await supabase
     .from('recipes')
-    .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+    .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
     .eq('is_deleted', false)
     .in('id', paginatedIds)
     .order('created_at', { ascending: false });
@@ -92,6 +92,8 @@ async function getProteinRecipesWithCount(proteinSlug: string): Promise<{ recipe
     dietTags: row.diet_tags || [],
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
+    avgRating: row.avg_rating,
+    reviewCount: row.review_count || 0,
   }));
 
   return { recipes, totalCount };

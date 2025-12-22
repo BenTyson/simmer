@@ -20,6 +20,8 @@ export interface Recipe {
   sourceName: string | null;
   createdAt: string;
   updatedAt: string;
+  avgRating: number | null;
+  reviewCount: number;
 }
 
 export interface Ingredient {
@@ -78,7 +80,20 @@ export interface RecipeSearchResult {
   dietTags: string[];
   sourceDomain: string;
   sourceName: string | null;
+  avgRating: number | null;
+  reviewCount: number;
   rank?: number;
+}
+
+export interface Review {
+  id: string;
+  recipeId: string;
+  authorName: string;
+  rating: number;
+  title: string | null;
+  comment: string;
+  helpfulCount: number;
+  createdAt: string;
 }
 
 export interface SearchParams {

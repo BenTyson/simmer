@@ -52,7 +52,7 @@ async function getTimeRecipesWithCount(timeSlug: string): Promise<{ recipes: Rec
   // Get first page of recipes
   const { data, error } = await supabase
     .from('recipes')
-    .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+    .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
     .eq('is_deleted', false)
     .not('total_time', 'is', null)
     .lte('total_time', time.maxMinutes)
@@ -78,6 +78,8 @@ async function getTimeRecipesWithCount(timeSlug: string): Promise<{ recipes: Rec
     dietTags: row.diet_tags || [],
     sourceDomain: row.source_domain,
     sourceName: row.source_name,
+    avgRating: row.avg_rating,
+    reviewCount: row.review_count || 0,
   }));
 
   return { recipes, totalCount: count || 0 };

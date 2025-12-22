@@ -55,11 +55,44 @@ export async function GET(request: NextRequest) {
   const filterValue = searchParams.get('value');
   const offset = parseInt(searchParams.get('offset') || '0', 10);
 
+  // Additional filters (can be combined with primary filter)
+  const extraCuisines = searchParams.get('cuisines')?.split(',').filter(Boolean) || [];
+  const extraDiets = searchParams.get('diets')?.split(',').filter(Boolean) || [];
+  const maxTime = searchParams.get('maxTime') ? parseInt(searchParams.get('maxTime')!, 10) : null;
+  const minRating = searchParams.get('minRating') ? parseFloat(searchParams.get('minRating')!) : null;
+
   if (!filterType || !filterValue) {
     return NextResponse.json({ error: 'Missing type or value parameter' }, { status: 400 });
   }
 
   const supabase = createServerClient();
+
+  // Helper to apply extra filters to a query
+  const applyExtraFilters = (query: any) => {
+    let q = query;
+
+    // Apply cuisine filters
+    for (const cuisine of extraCuisines) {
+      q = q.contains('cuisine', [cuisine]);
+    }
+
+    // Apply diet filters
+    for (const diet of extraDiets) {
+      q = q.contains('diet_tags', [diet]);
+    }
+
+    // Apply time filter
+    if (maxTime) {
+      q = q.not('total_time', 'is', null).lte('total_time', maxTime);
+    }
+
+    // Apply rating filter
+    if (minRating) {
+      q = q.not('avg_rating', 'is', null).gte('avg_rating', minRating);
+    }
+
+    return q;
+  };
 
   try {
     let recipes: any[] = [];
@@ -71,18 +104,22 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
       }
 
-      const { count } = await supabase
+      let countQuery = supabase
         .from('recipes')
         .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
         .contains('category', [categoryName]);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
       totalCount = count || 0;
 
-      const { data, error } = await supabase
+      let dataQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
         .eq('is_deleted', false)
-        .contains('category', [categoryName])
+        .contains('category', [categoryName]);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
         .order('created_at', { ascending: false })
         .range(offset, offset + PAGE_SIZE - 1);
 
@@ -95,18 +132,22 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid cuisine' }, { status: 400 });
       }
 
-      const { count } = await supabase
+      let countQuery = supabase
         .from('recipes')
         .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
         .contains('cuisine', [cuisineName]);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
       totalCount = count || 0;
 
-      const { data, error } = await supabase
+      let dataQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
         .eq('is_deleted', false)
-        .contains('cuisine', [cuisineName])
+        .contains('cuisine', [cuisineName]);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
         .order('created_at', { ascending: false })
         .range(offset, offset + PAGE_SIZE - 1);
 
@@ -119,18 +160,22 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid diet' }, { status: 400 });
       }
 
-      const { count } = await supabase
+      let countQuery = supabase
         .from('recipes')
         .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
         .contains('diet_tags', [dietName]);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
       totalCount = count || 0;
 
-      const { data, error } = await supabase
+      let dataQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
         .eq('is_deleted', false)
-        .contains('diet_tags', [dietName])
+        .contains('diet_tags', [dietName]);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
         .order('created_at', { ascending: false })
         .range(offset, offset + PAGE_SIZE - 1);
 
@@ -143,20 +188,24 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid time filter' }, { status: 400 });
       }
 
-      const { count } = await supabase
+      let countQuery = supabase
         .from('recipes')
         .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
         .not('total_time', 'is', null)
         .lte('total_time', timeConfig.maxMinutes);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
       totalCount = count || 0;
 
-      const { data, error } = await supabase
+      let dataQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
         .eq('is_deleted', false)
         .not('total_time', 'is', null)
-        .lte('total_time', timeConfig.maxMinutes)
+        .lte('total_time', timeConfig.maxMinutes);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
         .order('total_time', { ascending: true })
         .range(offset, offset + PAGE_SIZE - 1);
 
@@ -181,16 +230,26 @@ export async function GET(request: NextRequest) {
       }
 
       const recipeIds = [...new Set(ingredientMatches.map(i => i.recipe_id))];
-      totalCount = recipeIds.length;
 
-      const paginatedIds = recipeIds.slice(offset, offset + PAGE_SIZE);
-
-      const { data, error } = await supabase
+      // Apply extra filters and get count
+      let countQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
-        .in('id', paginatedIds)
-        .order('created_at', { ascending: false });
+        .in('id', recipeIds);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
+      totalCount = count || 0;
+
+      let dataQuery = supabase
+        .from('recipes')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
+        .eq('is_deleted', false)
+        .in('id', recipeIds);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
+        .order('created_at', { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
 
       if (error) throw error;
       recipes = data || [];
@@ -213,16 +272,26 @@ export async function GET(request: NextRequest) {
       }
 
       const recipeIds = [...new Set(instructionMatches.map(i => i.recipe_id))];
-      totalCount = recipeIds.length;
 
-      const paginatedIds = recipeIds.slice(offset, offset + PAGE_SIZE);
-
-      const { data, error } = await supabase
+      // Apply extra filters and get count
+      let countQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
-        .in('id', paginatedIds)
-        .order('created_at', { ascending: false });
+        .in('id', recipeIds);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
+      totalCount = count || 0;
+
+      let dataQuery = supabase
+        .from('recipes')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
+        .eq('is_deleted', false)
+        .in('id', recipeIds);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
+        .order('created_at', { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
 
       if (error) throw error;
       recipes = data || [];
@@ -245,16 +314,26 @@ export async function GET(request: NextRequest) {
       }
 
       const recipeIds = [...new Set(ingredientMatches.map(i => i.recipe_id))];
-      totalCount = recipeIds.length;
 
-      const paginatedIds = recipeIds.slice(offset, offset + PAGE_SIZE);
-
-      const { data, error } = await supabase
+      // Apply extra filters and get count
+      let countQuery = supabase
         .from('recipes')
-        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name')
+        .select('id', { count: 'exact', head: true })
         .eq('is_deleted', false)
-        .in('id', paginatedIds)
-        .order('created_at', { ascending: false });
+        .in('id', recipeIds);
+      countQuery = applyExtraFilters(countQuery);
+      const { count } = await countQuery;
+      totalCount = count || 0;
+
+      let dataQuery = supabase
+        .from('recipes')
+        .select('id, slug, name, description, prep_time, cook_time, total_time, servings, cuisine, category, diet_tags, source_domain, source_name, avg_rating, review_count')
+        .eq('is_deleted', false)
+        .in('id', recipeIds);
+      dataQuery = applyExtraFilters(dataQuery);
+      const { data, error } = await dataQuery
+        .order('created_at', { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
 
       if (error) throw error;
       recipes = data || [];
@@ -278,6 +357,8 @@ export async function GET(request: NextRequest) {
       dietTags: row.diet_tags || [],
       sourceDomain: row.source_domain,
       sourceName: row.source_name,
+      avgRating: row.avg_rating,
+      reviewCount: row.review_count || 0,
     }));
 
     return NextResponse.json({ recipes: transformedRecipes, totalCount });

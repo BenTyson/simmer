@@ -205,3 +205,49 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-neutral-400);
 }
+
+/* iOS safe area for bottom navigation */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Bottom sheet slide-up animation */
+@keyframes slideUpFromBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-sheet {
+  animation: slideUpFromBottom 0.3s var(--ease-smooth);
+}
+
+/* More playful card hover effect */
+.card-hover-playful {
+  transition: all 0.2s var(--ease-bounce);
+}
+
+.card-hover-playful:hover {
+  transform: translateY(-4px) rotate(-0.5deg);
+  box-shadow: 0 20px 40px -10px rgba(255, 107, 53, 0.15);
+}
+
+/* Section header accent underline */
+.section-header-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.section-header-accent::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 40px;
+  height: 4px;
+  background: linear-gradient(to right, var(--color-primary-500), var(--color-secondary-500));
+  border-radius: 2px;
+}

@@ -4,12 +4,14 @@ import { ExternalLink, Clock, Users, ChefHat } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { Badge, CategoryBadge, DietBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { StarRating } from '@/components/ui/StarRating';
 import { getRecipeBySlug } from '@/lib/db/recipes';
 import { RecipeControls } from '@/components/recipe/RecipeControls';
 import { IngredientList } from '@/components/recipe/IngredientList';
 import { Instructions } from '@/components/recipe/Instructions';
 import { SourceAttribution } from '@/components/recipe/SourceAttribution';
 import { RecipeSchema } from '@/components/recipe/RecipeSchema';
+import { ReviewsSection } from '@/components/recipe/ReviewsSection';
 import type { Metadata } from 'next';
 
 interface RecipePageProps {
@@ -98,6 +100,14 @@ export default async function RecipePage({ params }: RecipePageProps) {
                   </span>
                 </div>
               )}
+              {recipe.avgRating && recipe.avgRating > 0 && (
+                <div className="flex items-center gap-2">
+                  <StarRating rating={recipe.avgRating} size="sm" />
+                  <span className="text-neutral-500">
+                    ({recipe.reviewCount} {recipe.reviewCount === 1 ? 'review' : 'reviews'})
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Diet tags */}
@@ -183,6 +193,13 @@ export default async function RecipePage({ params }: RecipePageProps) {
               </div>
             </div>
           )}
+
+          {/* Reviews Section */}
+          <ReviewsSection
+            recipeId={recipe.id}
+            avgRating={recipe.avgRating ?? null}
+            reviewCount={recipe.reviewCount || 0}
+          />
         </Container>
       </div>
     </>

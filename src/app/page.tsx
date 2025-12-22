@@ -129,7 +129,7 @@ export default function HomePage() {
         <Container>
           <div className="py-20 md:py-32 text-center">
             {/* Tagline badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 text-primary-700 text-sm font-medium mb-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 text-primary-800 text-sm font-medium mb-6 animate-fade-in">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
@@ -166,7 +166,7 @@ export default function HomePage() {
                 <Link
                   key={search}
                   href={`/search?q=${encodeURIComponent(search)}`}
-                  className="text-sm text-primary-600 hover:text-primary-700 hover:underline"
+                  className="text-sm text-primary-700 hover:text-primary-800 hover:underline"
                 >
                   {search}
                 </Link>
@@ -351,7 +351,7 @@ export default function HomePage() {
           <p className="text-center text-sm text-neutral-500">
             All recipes link to their original sources. We believe in giving credit where it&apos;s due.
             <br />
-            <Link href="/about" className="text-primary-600 hover:underline">
+            <Link href="/about" className="text-primary-700 hover:underline">
               Learn more about how Simmer works
             </Link>
           </p>

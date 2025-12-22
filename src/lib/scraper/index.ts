@@ -93,6 +93,8 @@ export async function scrapeRecipe(url: string): Promise<ScrapeResult> {
       sourceUrl: url,
       sourceDomain: domain,
       sourceName: extractSourceName(schemaRecipe),
+      avgRating: null,
+      reviewCount: 0,
     };
 
     // Parse ingredients
