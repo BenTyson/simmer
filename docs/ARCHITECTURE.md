@@ -1,7 +1,7 @@
 # Simmer - Technical Architecture
 
-> **Last Updated**: 2025-12-22
-> **Related**: [SESSION-START.md](./SESSION-START.md) | [SIMMER.md](./SIMMER.md)
+> **Last Updated**: 2025-12-23
+> **Related**: [SESSION-START.md](./SESSION-START.md) | [SIMMER.md](./SIMMER.md) | [AGENT-WORKFLOW.md](./AGENT-WORKFLOW.md)
 
 ---
 
@@ -80,11 +80,13 @@ simmer/
 │   │   │   ├── Skeleton.tsx
 │   │   │   ├── StarRating.tsx      # Display star rating
 │   │   │   ├── StarInput.tsx       # Interactive star input
+│   │   │   ├── BottomSheet.tsx     # Mobile slide-up modal
 │   │   │   └── index.ts
 │   │   ├── layout/                # Layout components
 │   │   │   ├── Header.tsx
 │   │   │   ├── Footer.tsx
 │   │   │   ├── Container.tsx
+│   │   │   ├── BottomNav.tsx       # Mobile bottom navigation
 │   │   │   └── index.ts
 │   │   ├── recipe/                # Recipe-specific
 │   │   │   ├── RecipeCard.tsx
@@ -97,7 +99,8 @@ simmer/
 │   │   │   ├── ReviewForm.tsx      # Review submission form
 │   │   │   ├── ReviewList.tsx      # Paginated review list
 │   │   │   ├── ReviewsSection.tsx  # Wrapper for recipe pages
-│   │   │   ├── RecipeFilters.tsx   # Cuisine/diet/time/rating filters
+│   │   │   ├── RecipeFilters.tsx   # Desktop dropdown filters
+│   │   │   ├── MobileFilters.tsx   # Mobile bottom sheet filters
 │   │   │   ├── BrowseRecipes.tsx   # Browse grid with filters + pagination
 │   │   │   └── index.ts
 │   │   ├── search/
@@ -512,6 +515,13 @@ const useShoppingList = create(
 
 ## 10. Deployment
 
+### Environments
+
+| Branch | Environment | URL |
+|--------|-------------|-----|
+| `develop` | Staging | https://simmer-staging-staging.up.railway.app |
+| `main` | Production | https://simmer-production.up.railway.app |
+
 ### Railway Configuration
 
 ```json
@@ -531,6 +541,7 @@ const useShoppingList = create(
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...  # For scraping
+NEXT_PUBLIC_SITE_URL=https://your-domain.com  # Plausible, OG images
 
 # Optional
 SCRAPE_USER_AGENT=SimmerBot/1.0
@@ -542,6 +553,18 @@ CRON_SECRET=xxx
 
 ```bash
 output: 'standalone'  # Self-contained for Railway
+```
+
+### Railway CLI
+
+```bash
+# Switch environments
+railway environment staging
+railway environment production
+
+# View logs & variables
+railway logs
+railway variables
 ```
 
 ---

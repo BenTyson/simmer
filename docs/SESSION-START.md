@@ -1,8 +1,8 @@
 # Simmer - AI Agent Session Start
 
 > **READ THIS FIRST** - Essential context for new AI agent sessions
-> **Last Updated**: 2025-12-22
-> **Project Status**: MVP Complete - Preparing for Public Launch
+> **Last Updated**: 2025-12-23
+> **Project Status**: MVP Complete - Ready for Launch
 
 ---
 
@@ -10,14 +10,24 @@
 
 ```bash
 cd /Users/bentyson/simmer
+git checkout develop     # Always work on develop branch
+git pull origin develop  # Get latest changes
+
 npm run dev              # http://localhost:3388
 npm run build            # Production build
-npm run seed:domains     # Seed 18 recipe site domains
-npm run seed:test        # Seed test recipe URLs
 
 # Scrape recipes (requires dev server running)
 curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/cron/scrape
 ```
+
+### Git Workflow
+```
+develop → https://simmer-staging-staging.up.railway.app (staging)
+main    → https://simmer-production.up.railway.app (production)
+```
+- **Always push to `develop`** - never push directly to `main`
+- Create PR from `develop` → `main` to deploy to production
+- See [AGENT-WORKFLOW.md](./AGENT-WORKFLOW.md) for full workflow guide
 
 ---
 
@@ -86,6 +96,14 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/c
 | `src/components/recipe/ReviewCard.tsx` | Single review display |
 | `src/components/recipe/ReviewsSection.tsx` | Wrapper for recipe pages |
 
+### Mobile UI Components
+| File | Purpose |
+|------|---------|
+| `src/components/layout/BottomNav.tsx` | Fixed bottom nav (mobile only) |
+| `src/components/ui/BottomSheet.tsx` | Slide-up modal component |
+| `src/components/recipe/MobileFilters.tsx` | Tab-based mobile filters |
+| `src/components/recipe/RecipeFilters.tsx` | Desktop dropdowns + mobile integration |
+
 ### Database Migrations
 | File | Purpose |
 |------|---------|
@@ -134,12 +152,21 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.com  # Used for sitemap, OG images, Pla
 - [x] Loading states for all main routes
 - [x] Lighthouse audit passed (Performance: 68%, A11y: 96%, Best Practices: 100%, SEO: 91%)
 - [x] Color contrast accessibility fixes
+- [x] **V2 Mobile-First UI Polish**:
+  - Mobile bottom navigation (Home, Search, List, Browse)
+  - Bottom sheet filters for mobile
+  - Simplified recipe cards (single smart badge)
+  - Playful hover effects (rotation, lift)
+  - Fixed invisible touch buttons on mobile
+- [x] **Staging Environment**:
+  - `develop` branch → staging.railway.app
+  - `main` branch → production.railway.app
+  - Full CI/CD pipeline configured
 
 ### Not Done - Launch Blockers
 - [ ] Get custom domain (user working on this)
 
 ### Not Done - Post-Launch
-- [ ] Production deployment (Railway)
 - [ ] Affiliate link integration
 - [ ] Scale to 1000+ recipes
 - [ ] User accounts (reviews currently anonymous)
@@ -176,3 +203,4 @@ curl -X POST "https://api.supabase.com/v1/projects/hrreshxbsmaakqkpygrm/database
 |----------|---------|
 | [SIMMER.md](./SIMMER.md) | Vision, business context, session log |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical architecture |
+| [AGENT-WORKFLOW.md](./AGENT-WORKFLOW.md) | Git branching & deployment workflow |
