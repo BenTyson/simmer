@@ -70,14 +70,14 @@ const cookingMethods = [
   { name: 'No-Cook', href: '/method/no-cook', emoji: '🥗' },
 ];
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://emberwhisk.co';
 
 // Structured data for homepage
 function HomePageSchema() {
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Simmer',
+    name: 'Ember Whisk',
     url: BASE_URL,
     description: 'Recipe search without the bloat. Find recipes, scale ingredients, and create shopping lists.',
     potentialAction: {
@@ -93,7 +93,7 @@ function HomePageSchema() {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Simmer',
+    name: 'Ember Whisk',
     url: BASE_URL,
     logo: `${BASE_URL}/icon.png`,
     sameAs: [],
@@ -352,7 +352,7 @@ export default function HomePage() {
             All recipes link to their original sources. We believe in giving credit where it&apos;s due.
             <br />
             <Link href="/about" className="text-primary-700 hover:underline">
-              Learn more about how Simmer works
+              Learn more about how Ember Whisk works
             </Link>
           </p>
         </Container>

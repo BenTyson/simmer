@@ -27,10 +27,10 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:shadow-primary-500/25 transition-shadow">
-              <span className="text-white font-bold text-lg md:text-xl">S</span>
+              <span className="text-white font-bold text-sm md:text-base">EW</span>
             </div>
             <span className="font-display text-xl md:text-2xl font-bold text-neutral-900">
-              Simmer
+              Ember Whisk
             </span>
           </Link>
 

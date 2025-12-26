@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Simmer - Recipe Search Without the Bloat';
+export const alt = 'Ember Whisk - Recipe Search Without the Bloat';
 
 export const size = {
   width: 1200,
@@ -86,14 +86,14 @@ export default function TwitterImage() {
         <div
           style={{
             display: 'flex',
-            fontSize: 80,
+            fontSize: 72,
             fontWeight: 800,
             color: '#1c1917',
             marginBottom: 20,
             letterSpacing: '-0.02em',
           }}
         >
-          Simmer
+          Ember Whisk
         </div>
 
         {/* Tagline */}

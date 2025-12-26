@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/Button';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About Simmer',
+  title: 'About Ember Whisk',
   description:
-    'Learn how Simmer works, our commitment to recipe attribution, and how we make cooking easier.',
+    'Learn how Ember Whisk works, our commitment to recipe attribution, and how we make cooking easier.',
 };
 
 export default function AboutPage() {
@@ -17,10 +17,10 @@ export default function AboutPage() {
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-neutral-900 mb-6">
-            About Simmer
+            About Ember Whisk
           </h1>
           <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
-            We built Simmer because we were tired of scrolling past life stories just to find a
+            We built Ember Whisk because we were tired of scrolling past life stories just to find a
             recipe. Our mission is simple: get you cooking faster.
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function AboutPage() {
                   We Credit Every Recipe
                 </h3>
                 <p className="text-primary-800 mb-4">
-                  Every recipe on Simmer links directly to its original source. We believe the
+                  Every recipe on Ember Whisk links directly to its original source. We believe the
                   people who create recipes deserve credit for their work. When you find a recipe
                   you love, click through to show the creator some appreciation.
                 </p>
@@ -98,26 +98,26 @@ export default function AboutPage() {
           <div className="prose prose-neutral max-w-none">
             <h3 id="privacy">Privacy Policy</h3>
             <p>
-              Simmer respects your privacy. We use privacy-focused analytics (Plausible) that
+              Ember Whisk respects your privacy. We use privacy-focused analytics (Plausible) that
               don&apos;t track you across the web. Your shopping lists are stored locally in your
               browser - we never see them.
             </p>
             <p>We may use cookies for:</p>
             <ul>
               <li>Remembering your unit preferences (metric/imperial)</li>
-              <li>Basic analytics to understand how people use Simmer</li>
+              <li>Basic analytics to understand how people use Ember Whisk</li>
             </ul>
 
             <h3 id="terms">Terms of Use</h3>
             <p>
-              Simmer is provided as-is. While we do our best to ensure recipe accuracy, we
+              Ember Whisk is provided as-is. While we do our best to ensure recipe accuracy, we
               aggregate data from third-party sources and cannot guarantee its correctness. Always
               use your judgment when cooking, especially regarding food safety.
             </p>
 
             <h3>Affiliate Disclosure</h3>
             <p>
-              Simmer may earn a commission when you purchase groceries through our affiliate
+              Ember Whisk may earn a commission when you purchase groceries through our affiliate
               links (Instacart, Amazon). This helps us keep the service free. Affiliate
               relationships never affect which recipes we show or how we present them.
             </p>
@@ -134,10 +134,10 @@ export default function AboutPage() {
           <p className="text-neutral-600">
             Email us at:{' '}
             <a
-              href="mailto:hello@simmer.recipes"
+              href="mailto:hello@emberwhisk.co"
               className="text-primary-600 hover:text-primary-700"
             >
-              hello@simmer.recipes
+              hello@emberwhisk.co
             </a>
           </p>
         </section>

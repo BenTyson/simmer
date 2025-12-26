@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Simmer - Recipe Search Without the Bloat',
-    short_name: 'Simmer',
+    name: 'Ember Whisk - Recipe Search Without the Bloat',
+    short_name: 'Ember Whisk',
     description: 'Find recipes without the life stories. Clean recipes with scaling and shopping lists.',
     start_url: '/',
     display: 'standalone',

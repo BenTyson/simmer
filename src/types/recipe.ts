@@ -1,5 +1,5 @@
 /**
- * Core recipe type definitions for Simmer
+ * Core recipe type definitions for Ember Whisk
  */
 
 export interface Recipe {

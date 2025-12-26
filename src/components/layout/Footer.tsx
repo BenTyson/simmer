@@ -21,7 +21,7 @@ const footerLinks = {
     { name: 'Keto', href: '/diet/keto' },
   ],
   about: [
-    { name: 'About Simmer', href: '/about' },
+    { name: 'About Ember Whisk', href: '/about' },
     { name: 'How It Works', href: '/about#how-it-works' },
     { name: 'Privacy Policy', href: '/about#privacy' },
     { name: 'Terms of Use', href: '/about#terms' },
@@ -110,18 +110,18 @@ export function Footer() {
               {/* Logo and tagline */}
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">S</span>
+                  <span className="text-white font-bold text-xs">EW</span>
                 </div>
                 <div>
-                  <span className="font-display font-bold text-neutral-900">Simmer</span>
+                  <span className="font-display font-bold text-neutral-900">Ember Whisk</span>
                   <span className="text-neutral-400 mx-2">·</span>
-                  <span className="text-neutral-500 text-sm">Let it simmer</span>
+                  <span className="text-neutral-500 text-sm">Recipes that ignite</span>
                 </div>
               </div>
 
               {/* Copyright */}
               <p className="text-sm text-neutral-500">
-                &copy; {new Date().getFullYear()} Simmer. All recipes link to their original sources.
+                &copy; {new Date().getFullYear()} Ember Whisk. All recipes link to their original sources.
               </p>
             </div>
           </div>

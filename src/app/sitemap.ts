@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { createServerClient } from '@/lib/db/client';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://emberwhisk.co';
 
 // Categories that have dedicated pages
 const CATEGORIES = [

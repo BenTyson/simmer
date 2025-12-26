@@ -83,7 +83,7 @@ export const useShoppingList = create<ShoppingListState>()(
       },
     }),
     {
-      name: 'simmer-shopping-list',
+      name: 'emberwhisk-shopping-list',
     }
   )
 );

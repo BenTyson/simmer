@@ -7,7 +7,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import './globals.css';
 
 // Extract domain from NEXT_PUBLIC_SITE_URL for Plausible analytics
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://emberwhisk.co';
 const plausibleDomain = new URL(siteUrl).hostname;
 
 const inter = Inter({
@@ -24,13 +24,13 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://simmer-production.up.railway.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://emberwhisk.co'),
   title: {
-    default: 'Simmer - Recipe Search Without the Bloat',
-    template: '%s | Simmer',
+    default: 'Ember Whisk - Recipe Search Without the Bloat',
+    template: '%s | Ember Whisk',
   },
   description:
-    'Find recipes without the life stories. Simmer aggregates recipes from across the web and presents them cleanly with ingredient scaling, unit conversion, and shopping lists.',
+    'Find recipes without the life stories. Ember Whisk aggregates recipes from across the web and presents them cleanly with ingredient scaling, unit conversion, and shopping lists.',
   keywords: [
     'recipes',
     'cooking',
@@ -39,18 +39,18 @@ export const metadata: Metadata = {
     'shopping list',
     'meal planning',
   ],
-  authors: [{ name: 'Simmer' }],
-  creator: 'Simmer',
+  authors: [{ name: 'Ember Whisk' }],
+  creator: 'Ember Whisk',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'Simmer',
-    title: 'Simmer - Recipe Search Without the Bloat',
+    siteName: 'Ember Whisk',
+    title: 'Ember Whisk - Recipe Search Without the Bloat',
     description: 'Find recipes without the life stories. Clean recipes with scaling and shopping lists.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Simmer - Recipe Search Without the Bloat',
+    title: 'Ember Whisk - Recipe Search Without the Bloat',
     description: 'Find recipes without the life stories. Clean recipes with scaling and shopping lists.',
   },
   robots: {

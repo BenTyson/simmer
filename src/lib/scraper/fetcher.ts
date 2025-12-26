@@ -4,7 +4,7 @@
 
 const DEFAULT_USER_AGENT =
   process.env.SCRAPE_USER_AGENT ||
-  'SimmerBot/1.0 (+https://simmer.recipes/about; recipe aggregator)';
+  'EmberWhiskBot/1.0 (+https://emberwhisk.co/about; recipe aggregator)';
 
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
 const MAX_RETRIES = 3;
