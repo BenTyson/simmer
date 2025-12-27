@@ -1,9 +1,10 @@
-# SIMMER - Project Overview
+# EMBER WHISK - Project Overview
 
-> **Last Updated**: 2025-12-22
-> **Status**: MVP Complete - Preparing for Public Launch
+> **Last Updated**: 2025-12-24
+> **Status**: MVP Complete - Ready for Launch
+> **Domain**: emberwhisk.co
 > **Local Dev**: `http://localhost:3388`
-> **Tagline**: "Let it simmer"
+> **Tagline**: "Recipes that ignite"
 
 ---
 
@@ -16,7 +17,7 @@
 
 ---
 
-## 1. What is Simmer?
+## 1. What is Ember Whisk?
 
 A recipe aggregator that strips away stories, ads, and fluff from recipe sites. We present just the recipe with value-added features:
 

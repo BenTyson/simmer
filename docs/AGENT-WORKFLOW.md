@@ -1,7 +1,7 @@
 # Agent Workflow Guide
 
-> **Simmer Project Git Workflow**
-> **Last Updated**: 2025-12-23
+> **Ember Whisk Project Git Workflow**
+> **Last Updated**: 2025-12-24
 
 ---
 
@@ -119,12 +119,12 @@ git log                       # YES
 
 ---
 
-## Simmer Deployment URLs
+## Ember Whisk Deployment URLs
 
 | Branch | Environment | URL |
 |--------|-------------|-----|
 | `develop` | Staging | https://simmer-staging-staging.up.railway.app |
-| `main` | Production | https://simmer-production.up.railway.app |
+| `main` | Production | https://emberwhisk.co |
 
 ### Railway CLI Commands
 

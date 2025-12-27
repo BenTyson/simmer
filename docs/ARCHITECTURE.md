@@ -1,6 +1,6 @@
-# Simmer - Technical Architecture
+# Ember Whisk - Technical Architecture
 
-> **Last Updated**: 2025-12-23
+> **Last Updated**: 2025-12-24
 > **Related**: [SESSION-START.md](./SESSION-START.md) | [SIMMER.md](./SIMMER.md) | [AGENT-WORKFLOW.md](./AGENT-WORKFLOW.md)
 
 ---
@@ -457,7 +457,7 @@ const useShoppingList = create(
       clearChecked: () => {...},
       clearAll: () => {...},
     }),
-    { name: 'simmer-shopping-list' }
+    { name: 'emberwhisk-shopping-list' }
   )
 );
 ```
@@ -520,7 +520,7 @@ const useShoppingList = create(
 | Branch | Environment | URL |
 |--------|-------------|-----|
 | `develop` | Staging | https://simmer-staging-staging.up.railway.app |
-| `main` | Production | https://simmer-production.up.railway.app |
+| `main` | Production | https://emberwhisk.co |
 
 ### Railway Configuration
 
@@ -544,7 +544,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...  # For scraping
 NEXT_PUBLIC_SITE_URL=https://your-domain.com  # Plausible, OG images
 
 # Optional
-SCRAPE_USER_AGENT=SimmerBot/1.0
+SCRAPE_USER_AGENT=EmberWhiskBot/1.0
 SCRAPE_RATE_LIMIT_MS=5000
 CRON_SECRET=xxx
 ```

@@ -1,8 +1,9 @@
-# Simmer - AI Agent Session Start
+# Ember Whisk - AI Agent Session Start
 
 > **READ THIS FIRST** - Essential context for new AI agent sessions
-> **Last Updated**: 2025-12-23
+> **Last Updated**: 2025-12-24
 > **Project Status**: MVP Complete - Ready for Launch
+> **Domain**: emberwhisk.co
 
 ---
 
@@ -23,7 +24,7 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3388/api/c
 ### Git Workflow
 ```
 develop → https://simmer-staging-staging.up.railway.app (staging)
-main    → https://simmer-production.up.railway.app (production)
+main    → https://emberwhisk.co (production)
 ```
 - **Always push to `develop`** - never push directly to `main`
 - Create PR from `develop` → `main` to deploy to production
@@ -33,7 +34,7 @@ main    → https://simmer-production.up.railway.app (production)
 
 ## 2. Project Overview
 
-**Simmer** strips bloat from recipe websites. We scrape schema.org/Recipe data, present it cleanly, and add value through scaling, unit conversion, and shopping lists.
+**Ember Whisk** strips bloat from recipe websites. We scrape schema.org/Recipe data, present it cleanly, and add value through scaling, unit conversion, and shopping lists.
 
 - **Revenue**: Affiliate links (Instacart, Amazon)
 - **Design**: Bold & Playful (coral #FF6B35, teal #00D9C0, yellow #FFD23F)
